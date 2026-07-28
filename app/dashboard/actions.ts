@@ -50,3 +50,120 @@ export async function cerrarSesion() {
   await supabase.auth.signOut();
   redirect("/login");
 }
+
+function periodoActual() {
+  const ahora = new Date();
+  return `${ahora.getFullYear()}-${String(ahora.getMonth() + 1).padStart(2, "0")}`;
+}
+
+/**
+ * Crea una nueva actividad. Si el estudiante ya generó al menos un
+ * seguimiento antes, se considera "no inicial" y exige observación
+ * (RF06). Devuelve { error } en vez de lanzar, para que el formulario
+ * cliente pueda mostrar el mensaje sin perder lo ya escrito.
+ */
+export async function agregarActividad(formData: FormData) {
+  const supabase = await createClient();
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) redirect("/login");
+
+  const nombre = String(formData.get("nombre") ?? "").trim();
+  const descripcion = String(formData.get("descripcion") ?? "").trim();
+  const observacion = String(formData.get("observacion") ?? "").trim();
+
+  if (!nombre) {
+    return { error: "El nombre de la actividad es obligatorio" };
+  }
+
+  const { count } = await supabase
+    .from("seguimientos")
+    .select("id", { count: "exact", head: true })
+    .eq("usuario_id", user.id)
+    .eq("estado", "generado");
+
+  const esActividadInicial = !count;
+
+  if (!esActividadInicial && !observacion) {
+    return { error: "Debes explicar por qué se agrega esta nueva actividad" };
+  }
+
+  const { error } = await supabase.from("actividades").insert({
+    usuario_id: user.id,
+    nombre,
+    descripcion: descripcion || null,
+    es_actividad_inicial: esActividadInicial,
+    observacion_adicion: esActividadInicial ? null : observacion,
+  });
+
+  if (error) {
+    return { error: error.message };
+  }
+
+  revalidatePath("/dashboard");
+  return { error: null };
+}
+
+/**
+ * Guarda (o actualiza) el % de avance de cada actividad para el
+ * seguimiento del mes en curso. Crea el seguimiento en estado
+ * "borrador" si todavía no existe. Si el seguimiento del periodo ya
+ * quedó "generado", no permite seguir editando (RF09).
+ */
+export async function guardarAvanceMensual(formData: FormData) {
+  const supabase = await createClient();
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) redirect("/login");
+
+  const periodo = periodoActual();
+
+  const { data: existente } = await supabase
+    .from("seguimientos")
+    .select("id, estado")
+    .eq("usuario_id", user.id)
+    .eq("periodo", periodo)
+    .maybeSingle();
+
+  if (existente?.estado === "generado") {
+    return { error: "El seguimiento de este mes ya fue generado y no se puede editar" };
+  }
+
+  let seguimientoId = existente?.id as string | undefined;
+
+  if (!seguimientoId) {
+    const { data: nuevo, error: errCrear } = await supabase
+      .from("seguimientos")
+      .insert({ usuario_id: user.id, periodo, estado: "borrador" })
+      .select("id")
+      .single();
+
+    if (errCrear || !nuevo) {
+      return { error: errCrear?.message ?? "No se pudo crear el seguimiento" };
+    }
+    seguimientoId = nuevo.id;
+  }
+
+  const entradas = Array.from(formData.entries()).filter(([clave]) =>
+    clave.startsWith("avance_")
+  );
+
+  for (const [clave, valor] of entradas) {
+    const actividadId = clave.replace("avance_", "");
+    const porcentaje = Math.max(0, Math.min(100, Number(valor)));
+
+    await supabase.from("avances_mensuales").upsert(
+      { seguimiento_id: seguimientoId, actividad_id: actividadId, porcentaje_avance: porcentaje },
+      { onConflict: "seguimiento_id,actividad_id" }
+    );
+  }
+
+  revalidatePath("/dashboard");
+  return { error: null, seguimientoId };
+}

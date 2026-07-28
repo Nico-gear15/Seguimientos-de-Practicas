@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { Briefcase } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 
 export default function LoginPage() {
@@ -40,61 +41,58 @@ export default function LoginPage() {
   }
 
   return (
-    <div style={{ maxWidth: 360, margin: "80px auto", padding: "0 16px" }}>
-      <h1 style={{ fontSize: 18, fontWeight: 600, marginBottom: 4 }}>Iniciar sesión</h1>
-      <p style={{ color: "#666", fontSize: 13, marginBottom: 24 }}>
-        Ingresa para ver y actualizar tu seguimiento de práctica.
-      </p>
-
-      <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-        <div>
-          <label style={{ fontSize: 13, color: "#444", display: "block", marginBottom: 4 }}>Correo</label>
-          <input
-            type="email"
-            value={correo}
-            onChange={(e) => setCorreo(e.target.value)}
-            autoComplete="username"
-            required
-            style={{ width: "100%", padding: "8px 10px", border: "1px solid #ccc", borderRadius: 8, fontSize: 14, boxSizing: "border-box" }}
-          />
-        </div>
-        <div>
-          <label style={{ fontSize: 13, color: "#444", display: "block", marginBottom: 4 }}>Contraseña</label>
-          <input
-            type="password"
-            value={contrasena}
-            onChange={(e) => setContrasena(e.target.value)}
-            autoComplete="current-password"
-            required
-            style={{ width: "100%", padding: "8px 10px", border: "1px solid #ccc", borderRadius: 8, fontSize: 14, boxSizing: "border-box" }}
-          />
+    <div className="flex min-h-screen items-center justify-center bg-gray-50 px-4">
+      <div className="w-full max-w-sm rounded-xl border border-gray-200 bg-white p-6">
+        <div className="mb-5 flex items-center gap-2">
+          <Briefcase size={19} className="text-accent" />
+          <span className="text-[15px] font-medium">Seguimiento de práctica</span>
         </div>
 
-        {error && <p style={{ color: "#b02a2a", fontSize: 13, margin: 0 }}>{error}</p>}
+        <h1 className="mb-1 text-lg font-semibold">Iniciar sesión</h1>
+        <p className="mb-5 text-sm text-gray-500">Ingresa para ver tu seguimiento de práctica.</p>
 
-        <button
-          type="submit"
-          disabled={cargando}
-          style={{
-            marginTop: 8,
-            padding: "9px 0",
-            borderRadius: 8,
-            border: "none",
-            background: "#2563eb",
-            color: "white",
-            fontSize: 14,
-            fontWeight: 500,
-            cursor: cargando ? "default" : "pointer",
-            opacity: cargando ? 0.7 : 1,
-          }}
-        >
-          {cargando ? "Ingresando..." : "Ingresar"}
-        </button>
-      </form>
+        <form onSubmit={handleSubmit} className="flex flex-col gap-3">
+          <div>
+            <label className="mb-1 block text-xs text-gray-500">Correo</label>
+            <input
+              type="email"
+              value={correo}
+              onChange={(e) => setCorreo(e.target.value)}
+              autoComplete="username"
+              required
+              className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm"
+            />
+          </div>
+          <div>
+            <label className="mb-1 block text-xs text-gray-500">Contraseña</label>
+            <input
+              type="password"
+              value={contrasena}
+              onChange={(e) => setContrasena(e.target.value)}
+              autoComplete="current-password"
+              required
+              className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm"
+            />
+          </div>
 
-      <p style={{ fontSize: 13, color: "#666", marginTop: 16 }}>
-        ¿No tienes cuenta? <Link href="/registro" style={{ color: "#2563eb" }}>Regístrate</Link>
-      </p>
+          {error && <p className="text-sm text-danger">{error}</p>}
+
+          <button
+            type="submit"
+            disabled={cargando}
+            className="mt-1 rounded-lg bg-accent py-2 text-sm font-medium text-white disabled:opacity-60"
+          >
+            {cargando ? "Ingresando..." : "Ingresar"}
+          </button>
+        </form>
+
+        <p className="mt-4 text-sm text-gray-500">
+          ¿No tienes cuenta?{" "}
+          <Link href="/registro" className="text-accent">
+            Regístrate
+          </Link>
+        </p>
+      </div>
     </div>
   );
 }
