@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { ShieldCheck, LogOut, ArrowRight } from "lucide-react";
 import { requireAdmin } from "@/lib/admin";
 
 interface FilaEstudiante {
@@ -15,20 +16,20 @@ interface FilaEstudiante {
 function EstadoBadge({ estado }: { estado: FilaEstudiante["ultimo_estado"] }) {
   if (estado === "generado") {
     return (
-      <span style={{ background: "#e6f4ea", color: "#1e7e34", padding: "2px 8px", borderRadius: 999, fontSize: 12 }}>
+      <span className="rounded-full bg-success-bg px-2.5 py-0.5 text-xs font-medium text-success">
         Al día
       </span>
     );
   }
   if (estado === "borrador") {
     return (
-      <span style={{ background: "#fff4e5", color: "#a15c00", padding: "2px 8px", borderRadius: 999, fontSize: 12 }}>
+      <span className="rounded-full bg-warning-bg px-2.5 py-0.5 text-xs font-medium text-warning">
         Pendiente de entregar
       </span>
     );
   }
   return (
-    <span style={{ background: "#fdeaea", color: "#b02a2a", padding: "2px 8px", borderRadius: 999, fontSize: 12 }}>
+    <span className="rounded-full bg-danger-bg px-2.5 py-0.5 text-xs font-medium text-danger">
       Sin seguimientos
     </span>
   );
@@ -37,15 +38,13 @@ function EstadoBadge({ estado }: { estado: FilaEstudiante["ultimo_estado"] }) {
 export default async function AdminPage() {
   const { supabase } = await requireAdmin();
 
-  // La vista ya filtra por rol = 'estudiante' y respeta RLS (security_invoker),
-  // así que un admin ve a todos y un no-admin no vería nada.
   const { data: estudiantes, error } = await supabase
     .from("vista_avance_estudiantes")
     .select("*")
     .order("avance_global_promedio", { ascending: true });
 
   if (error) {
-    return <p style={{ color: "crimson" }}>Error al cargar los estudiantes: {error.message}</p>;
+    return <p className="p-8 text-danger">Error al cargar los estudiantes: {error.message}</p>;
   }
 
   const filas = (estudiantes ?? []) as FilaEstudiante[];
@@ -53,92 +52,98 @@ export default async function AdminPage() {
   const pendientes = filas.filter((f) => f.ultimo_estado !== "generado").length;
 
   return (
-    <div style={{ maxWidth: 1000, margin: "0 auto", padding: "2rem 1rem" }}>
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
-        <div>
-          <h1 style={{ fontSize: 20, fontWeight: 600, marginBottom: 4 }}>Panel de seguimiento — Practicantes</h1>
-          <p style={{ color: "#666", fontSize: 14, marginBottom: 24 }}>
-            Vista general del avance de cada estudiante según su último seguimiento mensual.
-          </p>
+    <div className="min-h-screen bg-gray-50">
+      <div className="mx-auto max-w-4xl px-4 py-8">
+        <div className="mb-6 flex items-center justify-between">
+          <div>
+            <div className="mb-1 flex items-center gap-2">
+              <ShieldCheck size={19} className="text-accent" />
+              <h1 className="text-[15px] font-medium">Panel de seguimiento — Practicantes</h1>
+            </div>
+            <p className="text-sm text-gray-500">
+              Vista general del avance de cada estudiante según su último seguimiento mensual.
+            </p>
+          </div>
+          <form action="/api/admin/logout" method="post">
+            <button
+              type="submit"
+              className="flex items-center gap-1.5 rounded-lg border border-gray-200 bg-white px-3 py-1.5 text-xs text-gray-500 hover:bg-gray-50"
+            >
+              <LogOut size={13} />
+              Cerrar sesión
+            </button>
+          </form>
         </div>
-        <form action="/api/admin/logout" method="post">
-          <button
-            type="submit"
-            style={{ fontSize: 13, color: "#888", background: "none", border: "1px solid #ddd", borderRadius: 8, padding: "6px 12px", cursor: "pointer" }}
-          >
-            Cerrar sesión
-          </button>
-        </form>
+
+        <div className="mb-6 grid grid-cols-3 gap-3">
+          <div className="rounded-xl border border-gray-200 bg-white p-4">
+            <p className="mb-1 text-xs text-gray-500">Estudiantes</p>
+            <p className="text-2xl font-semibold">{filas.length}</p>
+          </div>
+          <div className="rounded-xl border border-gray-200 bg-white p-4">
+            <p className="mb-1 text-xs text-gray-500">Con seguimiento pendiente</p>
+            <p className="text-2xl font-semibold">{pendientes}</p>
+          </div>
+          <div className="rounded-xl border border-gray-200 bg-white p-4">
+            <p className="mb-1 text-xs text-gray-500">Avance {"<"} 30%</p>
+            <p className={`text-2xl font-semibold ${enRiesgo > 0 ? "text-danger" : ""}`}>{enRiesgo}</p>
+          </div>
+        </div>
+
+        <div className="overflow-hidden rounded-xl border border-gray-200 bg-white">
+          <table className="w-full text-sm">
+            <thead>
+              <tr className="border-b border-gray-200 text-left text-xs text-gray-500">
+                <th className="px-4 py-3 font-medium">Estudiante</th>
+                <th className="px-4 py-3 font-medium">Empresa</th>
+                <th className="px-4 py-3 font-medium">Último periodo</th>
+                <th className="px-4 py-3 font-medium">Estado</th>
+                <th className="px-4 py-3 font-medium">Avance</th>
+                <th className="px-4 py-3"></th>
+              </tr>
+            </thead>
+            <tbody>
+              {filas.map((f) => (
+                <tr key={f.usuario_id} className="border-b border-gray-100 last:border-0 hover:bg-gray-50">
+                  <td className="px-4 py-3">
+                    <div className="font-medium">{f.nombre}</div>
+                    <div className="text-xs text-gray-400">{f.correo}</div>
+                  </td>
+                  <td className="px-4 py-3">{f.nombre_empresa ?? "-"}</td>
+                  <td className="px-4 py-3">{f.ultimo_periodo ?? "-"}</td>
+                  <td className="px-4 py-3">
+                    <EstadoBadge estado={f.ultimo_estado} />
+                  </td>
+                  <td className="min-w-[140px] px-4 py-3">
+                    <div className="flex items-center gap-2">
+                      <div className="h-1.5 flex-1 overflow-hidden rounded bg-gray-100">
+                        <div
+                          className={`h-full rounded ${f.avance_global_promedio < 30 ? "bg-danger" : "bg-accent"}`}
+                          style={{ width: `${f.avance_global_promedio}%` }}
+                        />
+                      </div>
+                      <span className="w-9 text-xs text-gray-500">{f.avance_global_promedio}%</span>
+                    </div>
+                  </td>
+                  <td className="px-4 py-3">
+                    <Link
+                      href={`/admin/${f.usuario_id}`}
+                      className="inline-flex items-center gap-1 text-xs font-medium text-accent hover:underline"
+                    >
+                      Ver detalle
+                      <ArrowRight size={12} />
+                    </Link>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+
+          {filas.length === 0 && (
+            <p className="px-4 py-6 text-sm text-gray-400">Aún no hay estudiantes registrados.</p>
+          )}
+        </div>
       </div>
-
-      <div style={{ display: "flex", gap: 16, marginBottom: 24 }}>
-        <div style={{ border: "1px solid #eee", borderRadius: 10, padding: "12px 16px" }}>
-          <p style={{ fontSize: 12, color: "#888", margin: 0 }}>Estudiantes</p>
-          <p style={{ fontSize: 22, fontWeight: 600, margin: 0 }}>{filas.length}</p>
-        </div>
-        <div style={{ border: "1px solid #eee", borderRadius: 10, padding: "12px 16px" }}>
-          <p style={{ fontSize: 12, color: "#888", margin: 0 }}>Con seguimiento pendiente</p>
-          <p style={{ fontSize: 22, fontWeight: 600, margin: 0 }}>{pendientes}</p>
-        </div>
-        <div style={{ border: "1px solid #eee", borderRadius: 10, padding: "12px 16px" }}>
-          <p style={{ fontSize: 12, color: "#888", margin: 0 }}>Avance {"<"} 30%</p>
-          <p style={{ fontSize: 22, fontWeight: 600, margin: 0, color: enRiesgo > 0 ? "#b02a2a" : "inherit" }}>
-            {enRiesgo}
-          </p>
-        </div>
-      </div>
-
-      <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 14 }}>
-        <thead>
-          <tr style={{ textAlign: "left", borderBottom: "1px solid #ddd", color: "#666" }}>
-            <th style={{ padding: "8px 4px" }}>Estudiante</th>
-            <th style={{ padding: "8px 4px" }}>Empresa</th>
-            <th style={{ padding: "8px 4px" }}>Último periodo</th>
-            <th style={{ padding: "8px 4px" }}>Estado</th>
-            <th style={{ padding: "8px 4px" }}>Avance</th>
-            <th style={{ padding: "8px 4px" }}></th>
-          </tr>
-        </thead>
-        <tbody>
-          {filas.map((f) => (
-            <tr key={f.usuario_id} style={{ borderBottom: "1px solid #f0f0f0" }}>
-              <td style={{ padding: "10px 4px" }}>
-                <div style={{ fontWeight: 500 }}>{f.nombre}</div>
-                <div style={{ color: "#888", fontSize: 12 }}>{f.correo}</div>
-              </td>
-              <td style={{ padding: "10px 4px" }}>{f.nombre_empresa ?? "-"}</td>
-              <td style={{ padding: "10px 4px" }}>{f.ultimo_periodo ?? "-"}</td>
-              <td style={{ padding: "10px 4px" }}>
-                <EstadoBadge estado={f.ultimo_estado} />
-              </td>
-              <td style={{ padding: "10px 4px", minWidth: 140 }}>
-                <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                  <div style={{ flex: 1, height: 6, background: "#eee", borderRadius: 4, overflow: "hidden" }}>
-                    <div
-                      style={{
-                        height: "100%",
-                        width: `${f.avance_global_promedio}%`,
-                        background: f.avance_global_promedio < 30 ? "#d9534f" : "#3b82f6",
-                        borderRadius: 4,
-                      }}
-                    />
-                  </div>
-                  <span style={{ fontSize: 12, color: "#666", width: 34 }}>{f.avance_global_promedio}%</span>
-                </div>
-              </td>
-              <td style={{ padding: "10px 4px" }}>
-                <Link href={`/admin/${f.usuario_id}`} style={{ fontSize: 13, color: "#2563eb" }}>
-                  Ver detalle →
-                </Link>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-
-      {filas.length === 0 && (
-        <p style={{ color: "#888", marginTop: 24 }}>Aún no hay estudiantes registrados.</p>
-      )}
     </div>
   );
 }
