@@ -10,11 +10,8 @@ const PROGRAMAS_INGENIERIA = [
   "Ingeniería de Sistemas",
   "Ingeniería Industrial",
   "Ingeniería Electrónica",
-  "Ingeniería Civil",
-  "Ingeniería Mecánica",
-  "Ingeniería de Software",
   "Ingeniería Ambiental",
-  "Ingeniería Biomédica",
+  "Bioingeniería",
 ];
 
 export default function RegistroPage() {

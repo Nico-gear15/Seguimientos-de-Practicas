@@ -22,7 +22,7 @@ export default function LoginPage() {
     setError(null);
     setCargando(true);
 
-    const { error: errLogin } = await supabase.auth.signInWithPassword({
+    const { data, error: errLogin } = await supabase.auth.signInWithPassword({
       email: correo,
       password: contrasena,
     });
@@ -38,10 +38,23 @@ export default function LoginPage() {
       return;
     }
 
-    startTransition(() => {
-      router.push("/dashboard");
-      router.refresh();
-    });
+    const usuario = data?.user;
+
+    if (usuario) {
+      const { data: perfil } = await supabase.from("perfiles").select("nombre, documento, programa_academico, semestre").eq("id", usuario.id).maybeSingle();
+
+      const perfilCompleto = Boolean(
+        perfil?.nombre?.trim() &&
+          perfil?.documento?.trim() &&
+          perfil?.programa_academico?.trim() &&
+          perfil?.semestre?.trim()
+      );
+
+      startTransition(() => {
+        router.push(perfilCompleto ? "/dashboard" : "/registro");
+        router.refresh();
+      });
+    }
   }
 
   return (
