@@ -1,19 +1,21 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useTransition } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Briefcase } from "lucide-react";
+import { Briefcase, LoaderCircle } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 
 export default function LoginPage() {
   const router = useRouter();
   const supabase = createClient();
+  const [isPending, startTransition] = useTransition();
 
   const [correo, setCorreo] = useState("");
   const [contrasena, setContrasena] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [cargando, setCargando] = useState(false);
+  const cargandoTotal = cargando || isPending;
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -36,8 +38,10 @@ export default function LoginPage() {
       return;
     }
 
-    router.push("/dashboard");
-    router.refresh();
+    startTransition(() => {
+      router.push("/dashboard");
+      router.refresh();
+    });
   }
 
   return (
@@ -60,7 +64,8 @@ export default function LoginPage() {
               onChange={(e) => setCorreo(e.target.value)}
               autoComplete="username"
               required
-              className="w-full rounded-lg border border-gray-300 dark:border-neutral-600 bg-white dark:bg-neutral-900 px-3 py-2 text-sm text-gray-900 dark:text-gray-100"
+              disabled={cargandoTotal}
+              className="w-full rounded-lg border border-gray-300 dark:border-neutral-600 bg-white dark:bg-neutral-900 px-3 py-2 text-sm text-gray-900 dark:text-gray-100 disabled:cursor-not-allowed disabled:opacity-70"
             />
           </div>
           <div>
@@ -71,7 +76,8 @@ export default function LoginPage() {
               onChange={(e) => setContrasena(e.target.value)}
               autoComplete="current-password"
               required
-              className="w-full rounded-lg border border-gray-300 dark:border-neutral-600 bg-white dark:bg-neutral-900 px-3 py-2 text-sm text-gray-900 dark:text-gray-100"
+              disabled={cargandoTotal}
+              className="w-full rounded-lg border border-gray-300 dark:border-neutral-600 bg-white dark:bg-neutral-900 px-3 py-2 text-sm text-gray-900 dark:text-gray-100 disabled:cursor-not-allowed disabled:opacity-70"
             />
           </div>
 
@@ -79,10 +85,17 @@ export default function LoginPage() {
 
           <button
             type="submit"
-            disabled={cargando}
-            className="mt-1 rounded-lg bg-accent py-2 text-sm font-medium text-white disabled:opacity-60"
+            disabled={cargandoTotal}
+            className="mt-1 inline-flex items-center justify-center gap-2 rounded-lg bg-accent py-2 text-sm font-medium text-white disabled:cursor-not-allowed disabled:opacity-70"
           >
-            {cargando ? "Ingresando..." : "Ingresar"}
+            {cargandoTotal ? (
+              <>
+                <LoaderCircle size={16} className="animate-spin" />
+                <span>Ingresando...</span>
+              </>
+            ) : (
+              "Ingresar"
+            )}
           </button>
         </form>
 
