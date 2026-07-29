@@ -41,37 +41,37 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gray-50 px-4">
-      <div className="w-full max-w-sm rounded-xl border border-gray-200 bg-white p-6">
+    <div className="flex min-h-screen items-center justify-center bg-gray-50 dark:bg-neutral-900 px-4">
+      <div className="w-full max-w-sm rounded-xl border border-gray-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 p-6">
         <div className="mb-5 flex items-center gap-2">
           <Briefcase size={19} className="text-accent" />
           <span className="text-[15px] font-medium">Seguimiento de práctica</span>
         </div>
 
         <h1 className="mb-1 text-lg font-semibold">Iniciar sesión</h1>
-        <p className="mb-5 text-sm text-gray-500">Ingresa para ver tu seguimiento de práctica.</p>
+        <p className="mb-5 text-sm text-gray-500 dark:text-gray-400">Ingresa para ver tu seguimiento de práctica.</p>
 
         <form onSubmit={handleSubmit} className="flex flex-col gap-3">
           <div>
-            <label className="mb-1 block text-xs text-gray-500">Correo</label>
+            <label className="mb-1 block text-xs text-gray-500 dark:text-gray-400">Correo</label>
             <input
               type="email"
               value={correo}
               onChange={(e) => setCorreo(e.target.value)}
               autoComplete="username"
               required
-              className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm"
+              className="w-full rounded-lg border border-gray-300 dark:border-neutral-600 px-3 py-2 text-sm"
             />
           </div>
           <div>
-            <label className="mb-1 block text-xs text-gray-500">Contraseña</label>
+            <label className="mb-1 block text-xs text-gray-500 dark:text-gray-400">Contraseña</label>
             <input
               type="password"
               value={contrasena}
               onChange={(e) => setContrasena(e.target.value)}
               autoComplete="current-password"
               required
-              className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm"
+              className="w-full rounded-lg border border-gray-300 dark:border-neutral-600 px-3 py-2 text-sm"
             />
           </div>
 
@@ -86,7 +86,7 @@ export default function LoginPage() {
           </button>
         </form>
 
-        <p className="mt-4 text-sm text-gray-500">
+        <p className="mt-4 text-sm text-gray-500 dark:text-gray-400">
           ¿No tienes cuenta?{" "}
           <Link href="/registro" className="text-accent">
             Regístrate

@@ -52,7 +52,7 @@ export default async function AdminPage() {
   const pendientes = filas.filter((f) => f.ultimo_estado !== "generado").length;
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 dark:bg-neutral-900">
       <div className="mx-auto max-w-4xl px-4 py-8">
         <div className="mb-6 flex items-center justify-between">
           <div>
@@ -60,14 +60,14 @@ export default async function AdminPage() {
               <ShieldCheck size={19} className="text-accent" />
               <h1 className="text-[15px] font-medium">Panel de seguimiento — Practicantes</h1>
             </div>
-            <p className="text-sm text-gray-500">
+            <p className="text-sm text-gray-500 dark:text-gray-400">
               Vista general del avance de cada estudiante según su último seguimiento mensual.
             </p>
           </div>
           <form action="/api/admin/logout" method="post">
             <button
               type="submit"
-              className="flex items-center gap-1.5 rounded-lg border border-gray-200 bg-white px-3 py-1.5 text-xs text-gray-500 hover:bg-gray-50"
+              className="flex items-center gap-1.5 rounded-lg border border-gray-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 px-3 py-1.5 text-xs text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-neutral-700"
             >
               <LogOut size={13} />
               Cerrar sesión
@@ -76,24 +76,24 @@ export default async function AdminPage() {
         </div>
 
         <div className="mb-6 grid grid-cols-3 gap-3">
-          <div className="rounded-xl border border-gray-200 bg-white p-4">
-            <p className="mb-1 text-xs text-gray-500">Estudiantes</p>
+          <div className="rounded-xl border border-gray-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 p-4">
+            <p className="mb-1 text-xs text-gray-500 dark:text-gray-400">Estudiantes</p>
             <p className="text-2xl font-semibold">{filas.length}</p>
           </div>
-          <div className="rounded-xl border border-gray-200 bg-white p-4">
-            <p className="mb-1 text-xs text-gray-500">Con seguimiento pendiente</p>
+          <div className="rounded-xl border border-gray-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 p-4">
+            <p className="mb-1 text-xs text-gray-500 dark:text-gray-400">Con seguimiento pendiente</p>
             <p className="text-2xl font-semibold">{pendientes}</p>
           </div>
-          <div className="rounded-xl border border-gray-200 bg-white p-4">
-            <p className="mb-1 text-xs text-gray-500">Avance {"<"} 30%</p>
+          <div className="rounded-xl border border-gray-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 p-4">
+            <p className="mb-1 text-xs text-gray-500 dark:text-gray-400">Avance {"<"} 30%</p>
             <p className={`text-2xl font-semibold ${enRiesgo > 0 ? "text-danger" : ""}`}>{enRiesgo}</p>
           </div>
         </div>
 
-        <div className="overflow-hidden rounded-xl border border-gray-200 bg-white">
+        <div className="overflow-hidden rounded-xl border border-gray-200 dark:border-neutral-700 bg-white dark:bg-neutral-800">
           <table className="w-full text-sm">
             <thead>
-              <tr className="border-b border-gray-200 text-left text-xs text-gray-500">
+              <tr className="border-b border-gray-200 dark:border-neutral-700 text-left text-xs text-gray-500 dark:text-gray-400">
                 <th className="px-4 py-3 font-medium">Estudiante</th>
                 <th className="px-4 py-3 font-medium">Empresa</th>
                 <th className="px-4 py-3 font-medium">Último periodo</th>
@@ -104,10 +104,10 @@ export default async function AdminPage() {
             </thead>
             <tbody>
               {filas.map((f) => (
-                <tr key={f.usuario_id} className="border-b border-gray-100 last:border-0 hover:bg-gray-50">
+                <tr key={f.usuario_id} className="border-b border-gray-100 dark:border-neutral-700 last:border-0 hover:bg-gray-50 dark:hover:bg-neutral-700">
                   <td className="px-4 py-3">
                     <div className="font-medium">{f.nombre}</div>
-                    <div className="text-xs text-gray-400">{f.correo}</div>
+                    <div className="text-xs text-gray-400 dark:text-gray-500 dark:text-gray-400">{f.correo}</div>
                   </td>
                   <td className="px-4 py-3">{f.nombre_empresa ?? "-"}</td>
                   <td className="px-4 py-3">{f.ultimo_periodo ?? "-"}</td>
@@ -116,13 +116,13 @@ export default async function AdminPage() {
                   </td>
                   <td className="min-w-[140px] px-4 py-3">
                     <div className="flex items-center gap-2">
-                      <div className="h-1.5 flex-1 overflow-hidden rounded bg-gray-100">
+                      <div className="h-1.5 flex-1 overflow-hidden rounded bg-gray-100 dark:bg-neutral-700">
                         <div
                           className={`h-full rounded ${f.avance_global_promedio < 30 ? "bg-danger" : "bg-accent"}`}
                           style={{ width: `${f.avance_global_promedio}%` }}
                         />
                       </div>
-                      <span className="w-9 text-xs text-gray-500">{f.avance_global_promedio}%</span>
+                      <span className="w-9 text-xs text-gray-500 dark:text-gray-400">{f.avance_global_promedio}%</span>
                     </div>
                   </td>
                   <td className="px-4 py-3">
@@ -140,7 +140,7 @@ export default async function AdminPage() {
           </table>
 
           {filas.length === 0 && (
-            <p className="px-4 py-6 text-sm text-gray-400">Aún no hay estudiantes registrados.</p>
+            <p className="px-4 py-6 text-sm text-gray-400 dark:text-gray-500 dark:text-gray-400">Aún no hay estudiantes registrados.</p>
           )}
         </div>
       </div>

@@ -2,8 +2,8 @@ import { guardarDatosGenerales } from "@/app/dashboard/actions";
 import type { Empresa, JefeInmediato, Perfil } from "@/lib/types";
 
 const campo = "mb-3";
-const label = "mb-1 block text-xs text-gray-500";
-const input = "w-full rounded-lg border border-gray-300 px-3 py-2 text-sm";
+const label = "mb-1 block text-xs text-gray-500 dark:text-gray-400";
+const input = "w-full rounded-lg border border-gray-300 dark:border-neutral-600 px-3 py-2 text-sm";
 
 export function DatosGeneralesForm({
   perfil,
@@ -16,7 +16,7 @@ export function DatosGeneralesForm({
 }) {
   return (
     <form action={guardarDatosGenerales} className="flex flex-col gap-6">
-      <div className="rounded-xl border border-gray-200 bg-white p-4">
+      <div className="rounded-xl border border-gray-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 p-4">
         <h2 className="mb-3 text-sm font-medium">Datos del estudiante</h2>
         <div className="mb-3 flex gap-3">
           <div className="flex-1">
@@ -36,7 +36,7 @@ export function DatosGeneralesForm({
         </div>
       </div>
 
-      <div className="rounded-xl border border-gray-200 bg-white p-4">
+      <div className="rounded-xl border border-gray-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 p-4">
         <h2 className="mb-3 text-sm font-medium">Datos de la empresa</h2>
         <div className={campo}>
           <label className={label}>Nombre de la empresa</label>
@@ -64,7 +64,7 @@ export function DatosGeneralesForm({
         </div>
       </div>
 
-      <div className="rounded-xl border border-gray-200 bg-white p-4">
+      <div className="rounded-xl border border-gray-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 p-4">
         <h2 className="mb-3 text-sm font-medium">Jefe inmediato</h2>
         <div className={campo}>
           <label className={label}>Nombre</label>

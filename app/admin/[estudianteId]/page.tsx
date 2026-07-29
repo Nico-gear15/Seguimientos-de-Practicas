@@ -43,7 +43,7 @@ export default async function DetalleEstudiantePage({
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 dark:bg-neutral-900">
       <div className="mx-auto max-w-4xl px-4 py-8">
         <Link href="/admin" className="mb-3 inline-flex items-center gap-1 text-sm text-accent hover:underline">
           <ArrowLeft size={14} />
@@ -51,44 +51,44 @@ export default async function DetalleEstudiantePage({
         </Link>
 
         <h1 className="mb-0.5 text-lg font-semibold">{perfil.nombre}</h1>
-        <p className="mb-6 text-sm text-gray-500">
+        <p className="mb-6 text-sm text-gray-500 dark:text-gray-400">
           {perfil.correo} · {perfil.programa_academico ?? "Programa no registrado"}
         </p>
 
         <div className="mb-7 grid grid-cols-2 gap-3">
-          <div className="rounded-xl border border-gray-200 bg-white p-4">
+          <div className="rounded-xl border border-gray-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 p-4">
             <p className="mb-2 text-sm font-medium">Empresa</p>
             {empresa ? (
               <>
                 <p className="text-sm">{empresa.nombre_empresa}</p>
-                <p className="text-xs text-gray-400">
+                <p className="text-xs text-gray-400 dark:text-gray-500 dark:text-gray-400">
                   {empresa.nit ?? "-"} · {empresa.direccion ?? "-"}
                 </p>
               </>
             ) : (
-              <p className="text-xs text-gray-400">Aún no diligenciado</p>
+              <p className="text-xs text-gray-400 dark:text-gray-500 dark:text-gray-400">Aún no diligenciado</p>
             )}
           </div>
-          <div className="rounded-xl border border-gray-200 bg-white p-4">
+          <div className="rounded-xl border border-gray-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 p-4">
             <p className="mb-2 text-sm font-medium">Jefe inmediato</p>
             {jefe ? (
               <>
                 <p className="text-sm">
                   {jefe.nombre} · {jefe.cargo ?? "-"}
                 </p>
-                <p className="text-xs text-gray-400">{jefe.correo ?? "-"}</p>
+                <p className="text-xs text-gray-400 dark:text-gray-500 dark:text-gray-400">{jefe.correo ?? "-"}</p>
               </>
             ) : (
-              <p className="text-xs text-gray-400">Aún no diligenciado</p>
+              <p className="text-xs text-gray-400 dark:text-gray-500 dark:text-gray-400">Aún no diligenciado</p>
             )}
           </div>
         </div>
 
         <h2 className="mb-2.5 text-sm font-medium">Avance mes a mes por actividad</h2>
-        <div className="mb-7 overflow-x-auto rounded-xl border border-gray-200 bg-white">
+        <div className="mb-7 overflow-x-auto rounded-xl border border-gray-200 dark:border-neutral-700 bg-white dark:bg-neutral-800">
           <table className="w-full text-sm">
             <thead>
-              <tr className="border-b border-gray-200 text-left text-xs text-gray-500">
+              <tr className="border-b border-gray-200 dark:border-neutral-700 text-left text-xs text-gray-500 dark:text-gray-400">
                 <th className="min-w-[220px] px-4 py-3 font-medium">Actividad</th>
                 {periodos.map((p) => (
                   <th key={p} className="px-3 py-3 text-center font-medium">{p}</th>
@@ -97,7 +97,7 @@ export default async function DetalleEstudiantePage({
             </thead>
             <tbody>
               {(actividades ?? []).map((act) => (
-                <tr key={act.id} className="border-b border-gray-100 last:border-0">
+                <tr key={act.id} className="border-b border-gray-100 dark:border-neutral-700 last:border-0">
                   <td className="px-4 py-3">
                     {act.nombre}
                     {!act.es_actividad_inicial && (
@@ -109,7 +109,7 @@ export default async function DetalleEstudiantePage({
                     return (
                       <td
                         key={p}
-                        className={`px-3 py-3 text-center ${valor === undefined ? "text-gray-300" : ""}`}
+                        className={`px-3 py-3 text-center ${valor === undefined ? "text-gray-300 dark:text-gray-600" : ""}`}
                       >
                         {valor === undefined ? "—" : `${valor}%`}
                       </td>
@@ -126,7 +126,7 @@ export default async function DetalleEstudiantePage({
           {(seguimientos ?? []).map((s) => (
             <div
               key={s.id}
-              className="flex items-center justify-between rounded-xl border border-gray-200 bg-white px-4 py-2.5"
+              className="flex items-center justify-between rounded-xl border border-gray-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 px-4 py-2.5"
             >
               <div className="text-sm">
                 <span className="font-medium">{s.periodo}</span>{" "}
@@ -146,7 +146,7 @@ export default async function DetalleEstudiantePage({
             </div>
           ))}
           {(seguimientos ?? []).length === 0 && (
-            <p className="text-sm text-gray-400">Este estudiante aún no ha generado ningún seguimiento.</p>
+            <p className="text-sm text-gray-400 dark:text-gray-500 dark:text-gray-400">Este estudiante aún no ha generado ningún seguimiento.</p>
           )}
         </div>
       </div>

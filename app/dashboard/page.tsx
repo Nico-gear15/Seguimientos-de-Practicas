@@ -81,9 +81,9 @@ export default async function DashboardPage() {
     : 0;
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 dark:bg-neutral-900">
       <div className="mx-auto max-w-3xl px-4 py-8">
-        <div className="mb-6 flex items-center justify-between border-b border-gray-200 pb-3">
+        <div className="mb-6 flex items-center justify-between border-b border-gray-200 dark:border-neutral-700 pb-3">
           <div className="flex items-center gap-2">
             <Briefcase size={19} className="text-accent" />
             <span className="text-[15px] font-medium">Seguimiento de práctica</span>
@@ -95,7 +95,7 @@ export default async function DashboardPage() {
             <form action={cerrarSesion}>
               <button
                 type="submit"
-                className="flex items-center gap-1 rounded-lg border border-gray-200 px-2.5 py-1.5 text-xs text-gray-500 hover:bg-gray-50"
+                className="flex items-center gap-1 rounded-lg border border-gray-200 dark:border-neutral-700 px-2.5 py-1.5 text-xs text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-neutral-700"
               >
                 <LogOut size={13} />
                 Salir
@@ -114,33 +114,33 @@ export default async function DashboardPage() {
         ) : (
           <div className="flex flex-col gap-5">
             <div className="grid grid-cols-3 gap-3">
-              <div className="rounded-xl bg-white border border-gray-200 p-4">
-                <p className="mb-1 text-xs text-gray-500">Avance global</p>
+              <div className="rounded-xl bg-white dark:bg-neutral-800 border border-gray-200 dark:border-neutral-700 p-4">
+                <p className="mb-1 text-xs text-gray-500 dark:text-gray-400">Avance global</p>
                 <p className="text-2xl font-semibold">{avanceGlobal}%</p>
               </div>
-              <div className="rounded-xl bg-white border border-gray-200 p-4">
-                <p className="mb-1 text-xs text-gray-500">Actividades activas</p>
+              <div className="rounded-xl bg-white dark:bg-neutral-800 border border-gray-200 dark:border-neutral-700 p-4">
+                <p className="mb-1 text-xs text-gray-500 dark:text-gray-400">Actividades activas</p>
                 <p className="text-2xl font-semibold">{actividadesConAvance.length}</p>
               </div>
-              <div className="rounded-xl bg-white border border-gray-200 p-4">
-                <p className="mb-1 text-xs text-gray-500">Seguimientos entregados</p>
+              <div className="rounded-xl bg-white dark:bg-neutral-800 border border-gray-200 dark:border-neutral-700 p-4">
+                <p className="mb-1 text-xs text-gray-500 dark:text-gray-400">Seguimientos entregados</p>
                 <p className="text-2xl font-semibold">{seguimientosGenerados ?? 0}</p>
               </div>
             </div>
 
-            <div className="rounded-xl bg-white border border-gray-200 p-4">
+            <div className="rounded-xl bg-white dark:bg-neutral-800 border border-gray-200 dark:border-neutral-700 p-4">
               <p className="mb-3 text-sm font-medium">Datos generales</p>
               <div className="grid grid-cols-3 gap-3 text-sm">
                 <div>
-                  <p className="mb-0.5 text-xs text-gray-400">Estudiante</p>
+                  <p className="mb-0.5 text-xs text-gray-400 dark:text-gray-500 dark:text-gray-400">Estudiante</p>
                   <p>{perfil?.nombre}</p>
                 </div>
                 <div>
-                  <p className="mb-0.5 text-xs text-gray-400">Empresa</p>
+                  <p className="mb-0.5 text-xs text-gray-400 dark:text-gray-500 dark:text-gray-400">Empresa</p>
                   <p>{empresa!.nombre_empresa}</p>
                 </div>
                 <div>
-                  <p className="mb-0.5 text-xs text-gray-400">Jefe inmediato</p>
+                  <p className="mb-0.5 text-xs text-gray-400 dark:text-gray-500 dark:text-gray-400">Jefe inmediato</p>
                   <p>{jefe!.nombre}</p>
                 </div>
               </div>
@@ -153,17 +153,17 @@ export default async function DashboardPage() {
               </div>
 
               {actividadesConAvance.length === 0 && (
-                <p className="text-sm text-gray-400">Aún no tienes actividades registradas.</p>
+                <p className="text-sm text-gray-400 dark:text-gray-500 dark:text-gray-400">Aún no tienes actividades registradas.</p>
               )}
 
               <div className="flex flex-col gap-2.5">
                 {actividadesConAvance.map(({ actividad, porcentajeActual }) => (
-                  <div key={actividad.id} className="rounded-xl border border-gray-200 bg-white p-3.5">
+                  <div key={actividad.id} className="rounded-xl border border-gray-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 p-3.5">
                     <div className="mb-2 flex justify-between text-sm">
                       <span>{actividad.nombre}</span>
-                      <span className="font-medium text-gray-500">{porcentajeActual}%</span>
+                      <span className="font-medium text-gray-500 dark:text-gray-400">{porcentajeActual}%</span>
                     </div>
-                    <div className="h-1.5 overflow-hidden rounded bg-gray-100">
+                    <div className="h-1.5 overflow-hidden rounded bg-gray-100 dark:bg-neutral-700">
                       <div
                         className="h-full rounded bg-accent"
                         style={{ width: `${porcentajeActual}%` }}

@@ -37,11 +37,11 @@ export function SeguimientoMensual({
   const soloLectura = !!seguimientoGeneradoId;
 
   return (
-    <div className="rounded-xl border border-gray-200 bg-white p-4">
+    <div className="rounded-xl border border-gray-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 p-4">
       <div className="mb-3 flex items-center justify-between">
         <div>
           <p className="text-sm font-medium">Seguimiento de {periodoLabel}</p>
-          <p className="text-xs text-gray-500">
+          <p className="text-xs text-gray-500 dark:text-gray-400">
             {soloLectura
               ? "Este seguimiento ya fue generado y no se puede editar."
               : "Actualiza el % de avance de cada actividad y guarda antes de generar el PDF."}
@@ -50,7 +50,7 @@ export function SeguimientoMensual({
         {seguimientoGeneradoId && (
           <a
             href={`/api/seguimientos/${seguimientoGeneradoId}/pdf`}
-            className="inline-flex items-center gap-1.5 rounded-lg border border-accent/30 px-3 py-1.5 text-sm font-medium text-accent hover:bg-accent-50"
+            className="inline-flex items-center gap-1.5 rounded-lg border border-accent/30 px-3 py-1.5 text-sm font-medium text-accent hover:bg-accent-50 dark:hover:bg-neutral-700"
           >
             <FileDown size={15} />
             Descargar PDF
@@ -63,7 +63,7 @@ export function SeguimientoMensual({
           <div key={actividad.id}>
             <div className="mb-1 flex items-center justify-between text-sm">
               <span>{actividad.nombre}</span>
-              <span className="font-medium text-gray-600">
+              <span className="font-medium text-gray-600 dark:text-gray-300 dark:text-gray-600">
                 {valores[actividad.id] ?? porcentajeActual}%
               </span>
             </div>
@@ -85,13 +85,13 @@ export function SeguimientoMensual({
               name={`comentario_${actividad.id}`}
               placeholder="Comentario del avance (opcional)"
               disabled={soloLectura}
-              className="mt-1.5 w-full rounded-lg border border-gray-200 px-2.5 py-1.5 text-xs disabled:opacity-50"
+              className="mt-1.5 w-full rounded-lg border border-gray-200 dark:border-neutral-700 px-2.5 py-1.5 text-xs disabled:opacity-50"
             />
           </div>
         ))}
 
         {actividades.length === 0 && (
-          <p className="text-sm text-gray-400">Agrega actividades para poder registrar su avance.</p>
+          <p className="text-sm text-gray-400 dark:text-gray-500 dark:text-gray-400">Agrega actividades para poder registrar su avance.</p>
         )}
 
         {estado.error && <p className="text-sm text-danger">{estado.error}</p>}
@@ -111,7 +111,7 @@ export function SeguimientoMensual({
       {!soloLectura && estado.seguimientoId && (
         <a
           href={`/api/seguimientos/${estado.seguimientoId}/pdf`}
-          className="mt-3 inline-flex items-center gap-1.5 rounded-lg border border-accent/30 px-3 py-1.5 text-sm font-medium text-accent hover:bg-accent-50"
+          className="mt-3 inline-flex items-center gap-1.5 rounded-lg border border-accent/30 px-3 py-1.5 text-sm font-medium text-accent hover:bg-accent-50 dark:hover:bg-neutral-700"
         >
           <FileDown size={15} />
           Guardar y generar PDF de {periodoLabel}

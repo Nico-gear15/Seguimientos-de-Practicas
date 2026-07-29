@@ -20,7 +20,7 @@ export function ActividadForm({ requiereObservacion }: { requiereObservacion: bo
     return (
       <button
         onClick={() => setAbierto(true)}
-        className="inline-flex items-center gap-1.5 rounded-lg border border-gray-200 bg-white px-3 py-1.5 text-sm font-medium text-gray-700 hover:bg-gray-50"
+        className="inline-flex items-center gap-1.5 rounded-lg border border-gray-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 px-3 py-1.5 text-sm font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-neutral-700"
       >
         <Plus size={15} />
         Agregar actividad
@@ -31,30 +31,30 @@ export function ActividadForm({ requiereObservacion }: { requiereObservacion: bo
   return (
     <form
       action={formAction}
-      className="mb-4 flex flex-col gap-3 rounded-xl border border-gray-200 bg-white p-4"
+      className="mb-4 flex flex-col gap-3 rounded-xl border border-gray-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 p-4"
     >
       <div className="flex items-center justify-between">
         <span className="text-sm font-medium">Nueva actividad</span>
-        <button type="button" onClick={() => setAbierto(false)} className="text-gray-400 hover:text-gray-600">
+        <button type="button" onClick={() => setAbierto(false)} className="text-gray-400 dark:text-gray-500 dark:text-gray-400 hover:text-gray-600 dark:text-gray-300 dark:text-gray-600">
           <X size={16} />
         </button>
       </div>
 
       <div>
-        <label className="mb-1 block text-xs text-gray-500">Nombre de la actividad</label>
+        <label className="mb-1 block text-xs text-gray-500 dark:text-gray-400">Nombre de la actividad</label>
         <input
           name="nombre"
           required
-          className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm"
+          className="w-full rounded-lg border border-gray-300 dark:border-neutral-600 px-3 py-2 text-sm"
         />
       </div>
 
       <div>
-        <label className="mb-1 block text-xs text-gray-500">Descripción (opcional)</label>
+        <label className="mb-1 block text-xs text-gray-500 dark:text-gray-400">Descripción (opcional)</label>
         <textarea
           name="descripcion"
           rows={2}
-          className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm"
+          className="w-full rounded-lg border border-gray-300 dark:border-neutral-600 px-3 py-2 text-sm"
         />
       </div>
 
