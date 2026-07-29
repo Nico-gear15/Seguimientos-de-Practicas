@@ -3,8 +3,11 @@ export interface Perfil {
   nombre: string;
   documento: string | null;
   correo: string;
+  telefono: string | null;
   programa_academico: string | null;
   semestre: string | null;
+  fecha_inicio_practica: string | null;
+  fecha_fin_practica: string | null;
 }
 
 export interface Empresa {
@@ -13,6 +16,7 @@ export interface Empresa {
   nombre_empresa: string;
   nit: string | null;
   direccion: string | null;
+  telefono: string | null;
   sector: string | null;
 }
 
@@ -41,6 +45,7 @@ export interface AvanceMensual {
   seguimiento_id: string;
   actividad_id: string;
   porcentaje_avance: number;
+  comentario: string | null;
   fecha_registro: string;
 }
 
@@ -59,9 +64,11 @@ export interface DatosSeguimientoPDF {
   empresa: Empresa;
   jefeInmediato: JefeInmediato;
   periodo: string;
+  fechaGeneracion: string;
   actividades: Array<{
     actividad: Actividad;
     porcentajeAvance: number;
+    comentario: string | null;
     esNuevaEsteMes: boolean;
   }>;
 }

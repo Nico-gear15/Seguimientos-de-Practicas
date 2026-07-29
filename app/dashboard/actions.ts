@@ -18,10 +18,15 @@ export async function guardarDatosGenerales(formData: FormData) {
 
   if (!user) redirect("/login");
 
+  const telefono = String(formData.get("telefono") ?? "").trim();
+  const fechaInicio = String(formData.get("fecha_inicio_practica") ?? "").trim();
+  const fechaFin = String(formData.get("fecha_fin_practica") ?? "").trim();
+
   const nombreEmpresa = String(formData.get("nombre_empresa") ?? "").trim();
   const nit = String(formData.get("nit") ?? "").trim();
   const direccion = String(formData.get("direccion") ?? "").trim();
   const sector = String(formData.get("sector") ?? "").trim();
+  const empresaTelefono = String(formData.get("empresa_telefono") ?? "").trim();
 
   const nombreJefe = String(formData.get("jefe_nombre") ?? "").trim();
   const cargo = String(formData.get("jefe_cargo") ?? "").trim();
@@ -29,9 +34,18 @@ export async function guardarDatosGenerales(formData: FormData) {
   const telefonoJefe = String(formData.get("jefe_telefono") ?? "").trim();
 
   await supabase
+    .from("perfiles")
+    .update({
+      telefono: telefono || null,
+      fecha_inicio_practica: fechaInicio || null,
+      fecha_fin_practica: fechaFin || null,
+    })
+    .eq("id", user.id);
+
+  await supabase
     .from("empresas")
     .upsert(
-      { usuario_id: user.id, nombre_empresa: nombreEmpresa, nit, direccion, sector },
+      { usuario_id: user.id, nombre_empresa: nombreEmpresa, nit, direccion, sector, telefono: empresaTelefono },
       { onConflict: "usuario_id" }
     );
 
@@ -157,9 +171,15 @@ export async function guardarAvanceMensual(formData: FormData) {
   for (const [clave, valor] of entradas) {
     const actividadId = clave.replace("avance_", "");
     const porcentaje = Math.max(0, Math.min(100, Number(valor)));
+    const comentario = String(formData.get(`comentario_${actividadId}`) ?? "").trim();
 
     await supabase.from("avances_mensuales").upsert(
-      { seguimiento_id: seguimientoId, actividad_id: actividadId, porcentaje_avance: porcentaje },
+      {
+        seguimiento_id: seguimientoId,
+        actividad_id: actividadId,
+        porcentaje_avance: porcentaje,
+        comentario: comentario || null,
+      },
       { onConflict: "seguimiento_id,actividad_id" }
     );
   }

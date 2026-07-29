@@ -80,6 +80,13 @@ export function SeguimientoMensual({
               }
               className="w-full accent-accent disabled:opacity-50"
             />
+            <input
+              type="text"
+              name={`comentario_${actividad.id}`}
+              placeholder="Comentario del avance (opcional)"
+              disabled={soloLectura}
+              className="mt-1.5 w-full rounded-lg border border-gray-200 px-2.5 py-1.5 text-xs disabled:opacity-50"
+            />
           </div>
         ))}
 

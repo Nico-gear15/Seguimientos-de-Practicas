@@ -109,7 +109,7 @@ export default async function DashboardPage() {
             <p className="mb-5 rounded-lg bg-warning-bg px-3.5 py-2.5 text-sm text-warning">
               Antes de continuar, completa los datos de tu empresa y de tu jefe inmediato.
             </p>
-            <DatosGeneralesForm empresa={empresa ?? null} jefe={jefe ?? null} />
+            <DatosGeneralesForm perfil={perfil!} empresa={empresa ?? null} jefe={jefe ?? null} />
           </div>
         ) : (
           <div className="flex flex-col gap-5">

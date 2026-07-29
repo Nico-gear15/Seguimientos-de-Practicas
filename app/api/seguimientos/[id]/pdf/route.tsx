@@ -57,14 +57,24 @@ export async function GET(
     );
   }
 
+  const fechaGeneracion = new Date().toLocaleString("es-CO", {
+    day: "numeric",
+    month: "numeric",
+    year: "numeric",
+    hour: "numeric",
+    minute: "2-digit",
+  });
+
   const datos: DatosSeguimientoPDF = {
     perfil,
     empresa,
     jefeInmediato,
     periodo: seguimiento.periodo,
+    fechaGeneracion,
     actividades: (avances ?? []).map((a: any) => ({
       actividad: a.actividades,
       porcentajeAvance: Number(a.porcentaje_avance),
+      comentario: a.comentario ?? null,
       // Se considera "nueva este mes" si su fecha de asignación cae dentro del periodo
       esNuevaEsteMes: !a.actividades.es_actividad_inicial &&
         a.actividades.fecha_asignacion?.slice(0, 7) === seguimiento.periodo,
