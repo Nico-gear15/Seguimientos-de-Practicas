@@ -19,10 +19,15 @@ export async function guardarDatosGenerales(formData: FormData) {
   if (!user) redirect("/login");
 
   const nombre = String(formData.get("nombre") ?? "").trim();
-  const documento = String(formData.get("documento") ?? "").trim();
+  // Normalizar documento y teléfonos: solo dígitos, máximo 11
+  const documento = String(formData.get("documento") ?? "")
+    .replace(/\D/g, "")
+    .slice(0, 11);
   const programaAcademico = String(formData.get("programa_academico") ?? "").trim();
   const semestre = String(formData.get("semestre") ?? "").trim();
-  const telefono = String(formData.get("telefono") ?? "").trim();
+  const telefono = String(formData.get("telefono") ?? "")
+    .replace(/\D/g, "")
+    .slice(0, 11);
   const fechaInicio = String(formData.get("fecha_inicio_practica") ?? "").trim();
   const fechaFin = String(formData.get("fecha_fin_practica") ?? "").trim();
 
@@ -30,12 +35,16 @@ export async function guardarDatosGenerales(formData: FormData) {
   const nit = String(formData.get("nit") ?? "").trim();
   const direccion = String(formData.get("direccion") ?? "").trim();
   const sector = String(formData.get("sector") ?? "").trim();
-  const empresaTelefono = String(formData.get("empresa_telefono") ?? "").trim();
+  const empresaTelefono = String(formData.get("empresa_telefono") ?? "")
+    .replace(/\D/g, "")
+    .slice(0, 11);
 
   const nombreJefe = String(formData.get("jefe_nombre") ?? "").trim();
   const cargo = String(formData.get("jefe_cargo") ?? "").trim();
   const correoJefe = String(formData.get("jefe_correo") ?? "").trim();
-  const telefonoJefe = String(formData.get("jefe_telefono") ?? "").trim();
+  const telefonoJefe = String(formData.get("jefe_telefono") ?? "")
+    .replace(/\D/g, "")
+    .slice(0, 11);
 
   await supabase
     .from("perfiles")
