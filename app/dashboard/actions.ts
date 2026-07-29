@@ -113,6 +113,9 @@ export async function agregarActividad(formData: FormData) {
   if (!nombre) {
     return { error: "El nombre de la actividad es obligatorio" };
   }
+  if (!descripcion) {
+    return { error: "La descripción de la actividad es obligatoria" };
+  }
 
   const { count } = await supabase
     .from("seguimientos")

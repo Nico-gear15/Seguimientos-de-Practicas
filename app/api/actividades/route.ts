@@ -25,6 +25,10 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "El nombre de la actividad es obligatorio" }, { status: 400 });
   }
 
+  if (!descripcion || typeof descripcion !== "string" || descripcion.trim().length === 0) {
+    return NextResponse.json({ error: "La descripción de la actividad es obligatoria" }, { status: 400 });
+  }
+
   if (!esActividadInicial && (!observacionAdicion || observacionAdicion.trim().length === 0)) {
     return NextResponse.json(
       { error: "Debes explicar por qué se agrega esta nueva actividad" },
