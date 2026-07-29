@@ -18,6 +18,10 @@ export async function guardarDatosGenerales(formData: FormData) {
 
   if (!user) redirect("/login");
 
+  const nombre = String(formData.get("nombre") ?? "").trim();
+  const documento = String(formData.get("documento") ?? "").trim();
+  const programaAcademico = String(formData.get("programa_academico") ?? "").trim();
+  const semestre = String(formData.get("semestre") ?? "").trim();
   const telefono = String(formData.get("telefono") ?? "").trim();
   const fechaInicio = String(formData.get("fecha_inicio_practica") ?? "").trim();
   const fechaFin = String(formData.get("fecha_fin_practica") ?? "").trim();
@@ -36,6 +40,10 @@ export async function guardarDatosGenerales(formData: FormData) {
   await supabase
     .from("perfiles")
     .update({
+      nombre: nombre || null,
+      documento: documento || null,
+      programa_academico: programaAcademico || null,
+      semestre: semestre || null,
       telefono: telefono || null,
       fecha_inicio_practica: fechaInicio || null,
       fecha_fin_practica: fechaFin || null,
