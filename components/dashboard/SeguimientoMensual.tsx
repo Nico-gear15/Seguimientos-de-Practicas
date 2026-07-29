@@ -85,7 +85,7 @@ export function SeguimientoMensual({
               name={`comentario_${actividad.id}`}
               placeholder="Comentario del avance (opcional)"
               disabled={soloLectura}
-              className="mt-1.5 w-full rounded-lg border border-gray-200 dark:border-neutral-700 px-2.5 py-1.5 text-xs disabled:opacity-50"
+              className="mt-1.5 w-full rounded-lg border border-gray-200 dark:border-neutral-700 bg-white dark:bg-neutral-900 px-2.5 py-1.5 text-xs text-gray-900 dark:text-gray-100 disabled:opacity-50"
             />
           </div>
         ))}

@@ -45,7 +45,7 @@ export function ActividadForm({ requiereObservacion }: { requiereObservacion: bo
         <input
           name="nombre"
           required
-          className="w-full rounded-lg border border-gray-300 dark:border-neutral-600 px-3 py-2 text-sm"
+          className="w-full rounded-lg border border-gray-300 dark:border-neutral-600 bg-white dark:bg-neutral-900 px-3 py-2 text-sm text-gray-900 dark:text-gray-100"
         />
       </div>
 
@@ -54,7 +54,7 @@ export function ActividadForm({ requiereObservacion }: { requiereObservacion: bo
         <textarea
           name="descripcion"
           rows={2}
-          className="w-full rounded-lg border border-gray-300 dark:border-neutral-600 px-3 py-2 text-sm"
+          className="w-full rounded-lg border border-gray-300 dark:border-neutral-600 bg-white dark:bg-neutral-900 px-3 py-2 text-sm text-gray-900 dark:text-gray-100"
         />
       </div>
 
@@ -67,7 +67,7 @@ export function ActividadForm({ requiereObservacion }: { requiereObservacion: bo
             name="observacion"
             required
             rows={2}
-            className="w-full rounded-lg border border-warning/40 bg-warning-bg/40 px-3 py-2 text-sm"
+            className="w-full rounded-lg border border-warning/40 bg-warning-bg/40 px-3 py-2 text-sm text-gray-900"
           />
         </div>
       )}

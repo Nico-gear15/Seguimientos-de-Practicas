@@ -3,7 +3,7 @@ import type { Empresa, JefeInmediato, Perfil } from "@/lib/types";
 
 const campo = "mb-3";
 const label = "mb-1 block text-xs text-gray-500 dark:text-gray-400";
-const input = "w-full rounded-lg border border-gray-300 dark:border-neutral-600 px-3 py-2 text-sm";
+const input = "w-full rounded-lg border border-gray-300 dark:border-neutral-600 bg-white dark:bg-neutral-900 px-3 py-2 text-sm text-gray-900 dark:text-gray-100";
 
 export function DatosGeneralesForm({
   perfil,

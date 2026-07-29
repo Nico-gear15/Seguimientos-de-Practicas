@@ -60,7 +60,7 @@ export default function LoginPage() {
               onChange={(e) => setCorreo(e.target.value)}
               autoComplete="username"
               required
-              className="w-full rounded-lg border border-gray-300 dark:border-neutral-600 px-3 py-2 text-sm"
+              className="w-full rounded-lg border border-gray-300 dark:border-neutral-600 bg-white dark:bg-neutral-900 px-3 py-2 text-sm text-gray-900 dark:text-gray-100"
             />
           </div>
           <div>
@@ -71,7 +71,7 @@ export default function LoginPage() {
               onChange={(e) => setContrasena(e.target.value)}
               autoComplete="current-password"
               required
-              className="w-full rounded-lg border border-gray-300 dark:border-neutral-600 px-3 py-2 text-sm"
+              className="w-full rounded-lg border border-gray-300 dark:border-neutral-600 bg-white dark:bg-neutral-900 px-3 py-2 text-sm text-gray-900 dark:text-gray-100"
             />
           </div>
 
