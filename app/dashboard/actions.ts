@@ -70,6 +70,10 @@ function periodoActual() {
   return `${ahora.getFullYear()}-${String(ahora.getMonth() + 1).padStart(2, "0")}`;
 }
 
+function periodoValido(periodo: string) {
+  return /^\d{4}-(0[1-9]|1[0-2])$/.test(periodo);
+}
+
 /**
  * Crea una nueva actividad. Si el estudiante ya generó al menos un
  * seguimiento antes, se considera "no inicial" y exige observación
@@ -136,25 +140,22 @@ export async function guardarAvanceMensual(formData: FormData) {
 
   if (!user) redirect("/login");
 
-  const periodo = periodoActual();
+  const periodo = String(formData.get("periodo") ?? "").trim();
+  const periodoSeleccionado = periodoValido(periodo) ? periodo : periodoActual();
 
   const { data: existente } = await supabase
     .from("seguimientos")
     .select("id, estado")
     .eq("usuario_id", user.id)
-    .eq("periodo", periodo)
+    .eq("periodo", periodoSeleccionado)
     .maybeSingle();
-
-  if (existente?.estado === "generado") {
-    return { error: "El seguimiento de este mes ya fue generado y no se puede editar" };
-  }
 
   let seguimientoId = existente?.id as string | undefined;
 
   if (!seguimientoId) {
     const { data: nuevo, error: errCrear } = await supabase
       .from("seguimientos")
-      .insert({ usuario_id: user.id, periodo, estado: "borrador" })
+      .insert({ usuario_id: user.id, periodo: periodoSeleccionado, estado: "borrador" })
       .select("id")
       .single();
 

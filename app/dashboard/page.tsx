@@ -13,9 +13,32 @@ const MESES = [
 
 function periodoActual() {
   const ahora = new Date();
-  const periodo = `${ahora.getFullYear()}-${String(ahora.getMonth() + 1).padStart(2, "0")}`;
-  const label = `${MESES[ahora.getMonth()]} de ${ahora.getFullYear()}`;
-  return { periodo, label };
+  return `${ahora.getFullYear()}-${String(ahora.getMonth() + 1).padStart(2, "0")}`;
+}
+
+function normalizarPeriodo(periodo?: string | null) {
+  if (!periodo) return null;
+  const match = /^\d{4}-(0[1-9]|1[0-2])$/.exec(periodo);
+  return match ? periodo : null;
+}
+
+function periodoLabel(periodo: string) {
+  const [anio, mes] = periodo.split("-").map(Number);
+  const indice = (mes ?? 1) - 1;
+  return `${MESES[indice] ?? "mes"} de ${anio}`;
+}
+
+function opcionesPeriodos() {
+  const ahora = new Date();
+  const opciones: Array<{ value: string; label: string }> = [];
+
+  for (let i = -12; i <= 12; i += 1) {
+    const fecha = new Date(ahora.getFullYear(), ahora.getMonth() + i, 1);
+    const value = `${fecha.getFullYear()}-${String(fecha.getMonth() + 1).padStart(2, "0")}`;
+    opciones.push({ value, label: periodoLabel(value) });
+  }
+
+  return opciones;
 }
 
 function iniciales(nombre: string) {
@@ -27,7 +50,11 @@ function iniciales(nombre: string) {
     .join("");
 }
 
-export default async function DashboardPage() {
+export default async function DashboardPage({
+  searchParams,
+}: {
+  searchParams?: Promise<{ periodo?: string | string[] }>;
+}) {
   const supabase = await createClient();
 
   const {
@@ -36,7 +63,12 @@ export default async function DashboardPage() {
 
   if (!user) redirect("/login");
 
-  const { periodo, label } = periodoActual();
+  const params = await searchParams;
+  const periodoSeleccionado = normalizarPeriodo(
+    Array.isArray(params?.periodo) ? params.periodo[0] : params?.periodo
+  );
+  const periodo = periodoSeleccionado ?? periodoActual();
+  const label = periodoLabel(periodo);
 
   const [{ data: perfil }, { data: empresa }, { data: jefe }, { data: actividades }, { data: seguimientoMes }] =
     await Promise.all([
@@ -51,7 +83,7 @@ export default async function DashboardPage() {
         .order("fecha_asignacion", { ascending: true }),
       supabase
         .from("seguimientos")
-        .select("*, avances_mensuales(actividad_id, porcentaje_avance)")
+        .select("*, avances_mensuales(actividad_id, porcentaje_avance, comentario)")
         .eq("usuario_id", user.id)
         .eq("periodo", periodo)
         .maybeSingle(),
@@ -65,14 +97,22 @@ export default async function DashboardPage() {
 
   const datosGeneralesCompletos = !!empresa && !!jefe;
 
-  const avancesDelMes = new Map<string, number>(
-    (seguimientoMes?.avances_mensuales ?? []).map((a: any) => [a.actividad_id, a.porcentaje_avance])
+  const avancesDelMes = new Map<string, { porcentaje: number; comentario: string | null }>(
+    (seguimientoMes?.avances_mensuales ?? []).map((a: any) => [
+      a.actividad_id,
+      { porcentaje: a.porcentaje_avance, comentario: a.comentario ?? null },
+    ])
   );
 
-  const actividadesConAvance = (actividades ?? []).map((actividad) => ({
-    actividad,
-    porcentajeActual: avancesDelMes.get(actividad.id) ?? 0,
-  }));
+  const actividadesConAvance = (actividades ?? []).map((actividad) => {
+    const avance = avancesDelMes.get(actividad.id);
+
+    return {
+      actividad,
+      porcentajeActual: avance?.porcentaje ?? 0,
+      comentarioActual: avance?.comentario ?? null,
+    };
+  });
 
   const avanceGlobal = actividadesConAvance.length
     ? Math.round(
@@ -146,7 +186,35 @@ export default async function DashboardPage() {
               </div>
             </div>
 
-            <div>
+            <div className="rounded-xl border border-gray-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 p-4">
+              <div className="mb-4 flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
+                <div>
+                  <p className="text-sm font-medium">Mes de seguimiento</p>
+                  <p className="text-xs text-gray-500 dark:text-gray-400">
+                    Selecciona cualquier periodo para registrar o editar su avance.
+                  </p>
+                </div>
+                <form method="get" className="flex items-center gap-2">
+                  <select
+                    name="periodo"
+                    defaultValue={periodo}
+                    className="rounded-lg border border-gray-300 dark:border-neutral-600 bg-white dark:bg-neutral-900 px-3 py-2 text-sm text-gray-900 dark:text-gray-100"
+                  >
+                    {opcionesPeriodos().map((opcion) => (
+                      <option key={opcion.value} value={opcion.value}>
+                        {opcion.label}
+                      </option>
+                    ))}
+                  </select>
+                  <button
+                    type="submit"
+                    className="rounded-lg border border-gray-200 dark:border-neutral-700 px-3 py-2 text-sm font-medium text-gray-700 dark:text-gray-200"
+                  >
+                    Ver mes
+                  </button>
+                </form>
+              </div>
+
               <div className="mb-2.5 flex items-center justify-between">
                 <p className="text-sm font-medium">Actividades asignadas</p>
                 <ActividadForm requiereObservacion={!!seguimientosGenerados} />
@@ -180,7 +248,9 @@ export default async function DashboardPage() {
             </div>
 
             <SeguimientoMensual
+              key={periodo}
               actividades={actividadesConAvance}
+              periodo={periodo}
               periodoLabel={label}
               seguimientoGeneradoId={seguimientoMes?.estado === "generado" ? seguimientoMes.id : null}
             />

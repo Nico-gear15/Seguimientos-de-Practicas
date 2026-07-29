@@ -8,16 +8,19 @@ import type { Actividad } from "@/lib/types";
 interface ActividadConAvance {
   actividad: Actividad;
   porcentajeActual: number;
+  comentarioActual: string | null;
 }
 
 const estadoInicial = { error: null as string | null, seguimientoId: undefined as string | undefined };
 
 export function SeguimientoMensual({
   actividades,
+  periodo,
   periodoLabel,
   seguimientoGeneradoId,
 }: {
   actividades: ActividadConAvance[];
+  periodo: string;
   periodoLabel: string;
   /** Si el seguimiento del mes ya fue generado, aquí llega su id (para el link de descarga) */
   seguimientoGeneradoId: string | null;
@@ -34,7 +37,7 @@ export function SeguimientoMensual({
     };
   }, estadoInicial);
 
-  const soloLectura = !!seguimientoGeneradoId;
+  const soloLectura = false;
 
   return (
     <div className="rounded-xl border border-gray-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 p-4">
@@ -42,9 +45,7 @@ export function SeguimientoMensual({
         <div>
           <p className="text-sm font-medium">Seguimiento de {periodoLabel}</p>
           <p className="text-xs text-gray-500 dark:text-gray-400">
-            {soloLectura
-              ? "Este seguimiento ya fue generado y no se puede editar."
-              : "Actualiza el % de avance de cada actividad y guarda antes de generar el PDF."}
+            Actualiza el % de avance de cada actividad y guarda para conservar el registro del mes seleccionado.
           </p>
         </div>
         {seguimientoGeneradoId && (
@@ -59,7 +60,9 @@ export function SeguimientoMensual({
       </div>
 
       <form action={formAction} className="flex flex-col gap-4">
-        {actividades.map(({ actividad, porcentajeActual }) => (
+        <input type="hidden" name="periodo" value={periodo} />
+
+        {actividades.map(({ actividad, porcentajeActual, comentarioActual }) => (
           <div key={actividad.id}>
             <div className="mb-1 flex items-center justify-between text-sm">
               <span>{actividad.nombre}</span>
@@ -84,6 +87,7 @@ export function SeguimientoMensual({
               type="text"
               name={`comentario_${actividad.id}`}
               placeholder="Comentario del avance (opcional)"
+              defaultValue={comentarioActual ?? ""}
               disabled={soloLectura}
               className="mt-1.5 w-full rounded-lg border border-gray-200 dark:border-neutral-700 bg-white dark:bg-neutral-900 px-2.5 py-1.5 text-xs text-gray-900 dark:text-gray-100 disabled:opacity-50"
             />
