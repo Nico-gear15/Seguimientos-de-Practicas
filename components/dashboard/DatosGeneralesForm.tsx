@@ -10,6 +10,7 @@ const PROGRAMAS_INGENIERIA = [
   "Ingeniería Electrónica",
   "Ingeniería Ambiental",
   "Bioingeniería",
+  "Ingeniería Robótica",
 ];
 
 const campo = "mb-3";
