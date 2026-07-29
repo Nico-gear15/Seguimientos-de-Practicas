@@ -6,6 +6,17 @@ import { useRouter } from "next/navigation";
 import { Briefcase } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 
+const PROGRAMAS_INGENIERIA = [
+  "Ingeniería de Sistemas",
+  "Ingeniería Industrial",
+  "Ingeniería Electrónica",
+  "Ingeniería Civil",
+  "Ingeniería Mecánica",
+  "Ingeniería de Software",
+  "Ingeniería Ambiental",
+  "Ingeniería Biomédica",
+];
+
 export default function RegistroPage() {
   const router = useRouter();
   const supabase = createClient();
@@ -26,10 +37,27 @@ export default function RegistroPage() {
     setForm((prev) => ({ ...prev, [campo]: valor }));
   }
 
+  function camposValidos() {
+    return Boolean(
+      form.nombre.trim() &&
+        form.documento.trim() &&
+        form.programa_academico.trim() &&
+        form.semestre.trim() &&
+        form.correo.trim() &&
+        form.contrasena.trim()
+    );
+  }
+
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setError(null);
     setMensaje(null);
+
+    if (!camposValidos()) {
+      setError("Todos los campos son obligatorios");
+      return;
+    }
+
     setCargando(true);
 
     const { data, error: errSignUp } = await supabase.auth.signUp({
@@ -76,17 +104,36 @@ export default function RegistroPage() {
 
         <form onSubmit={handleSubmit} className="flex flex-col gap-3">
           <Campo label="Nombre completo" value={form.nombre} onChange={(v) => actualizar("nombre", v)} required />
-          <Campo label="Documento de identidad" value={form.documento} onChange={(v) => actualizar("documento", v)} />
+          <Campo
+            label="Documento de identidad"
+            value={form.documento}
+            onChange={(v) => actualizar("documento", v)}
+            required
+          />
           <div className="flex gap-3">
             <div className="flex-1">
-              <Campo
-                label="Programa académico"
+              <label className="mb-1 block text-xs text-gray-500 dark:text-gray-400">Programa académico</label>
+              <select
                 value={form.programa_academico}
-                onChange={(v) => actualizar("programa_academico", v)}
-              />
+                onChange={(e) => actualizar("programa_academico", e.target.value)}
+                required
+                className="w-full rounded-lg border border-gray-300 dark:border-neutral-600 bg-white dark:bg-neutral-900 px-3 py-2 text-sm text-gray-900 dark:text-gray-100"
+              >
+                <option value="">Selecciona un programa</option>
+                {PROGRAMAS_INGENIERIA.map((programa) => (
+                  <option key={programa} value={programa}>
+                    {programa}
+                  </option>
+                ))}
+              </select>
             </div>
             <div className="w-24">
-              <Campo label="Semestre" value={form.semestre} onChange={(v) => actualizar("semestre", v)} />
+              <Campo
+                label="Semestre"
+                value={form.semestre}
+                onChange={(v) => actualizar("semestre", v)}
+                required
+              />
             </div>
           </div>
           <Campo
