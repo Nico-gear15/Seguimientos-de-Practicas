@@ -84,8 +84,8 @@ Se agregó un panel de solo lectura para que un coordinador/admin revise el avan
 
 Para simplificar el acceso, el panel de admin usa un **login independiente de Supabase Auth**, con usuario y contraseña definidos por variables de entorno:
 
-- `ADMIN_USERNAME` (por defecto `admin`)
-- `ADMIN_PASSWORD` (por defecto `admin123456789`)
+- `ADMIN_USERNAME` (por defecto `*********`)
+- `ADMIN_PASSWORD` (por defecto `****`)
 - `ADMIN_SESSION_SECRET`: string aleatorio usado para firmar la cookie de sesión (genera uno propio, no lo dejes vacío)
 
 Flujo: `app/admin/login` envía las credenciales a `POST /api/admin/login`; si coinciden, se crea una cookie httpOnly firmada válida por 8 horas. `lib/admin.ts` (`requireAdmin()`) verifica esa cookie en cada página/endpoint del panel y, si es válida, entrega un cliente de Supabase con **Service Role** (lee todos los datos sin depender de RLS, ya que el login ya no está atado a un usuario real de Supabase Auth).
