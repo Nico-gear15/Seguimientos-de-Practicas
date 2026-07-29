@@ -29,11 +29,11 @@ function periodoLabel(periodo: string) {
 }
 
 function opcionesPeriodos() {
-  const ahora = new Date();
   const opciones: Array<{ value: string; label: string }> = [];
+  const inicio = new Date(2026, 5, 1);
+  const fin = new Date(2027, 1, 1);
 
-  for (let i = -12; i <= 12; i += 1) {
-    const fecha = new Date(ahora.getFullYear(), ahora.getMonth() + i, 1);
+  for (let fecha = new Date(inicio); fecha <= fin; fecha.setMonth(fecha.getMonth() + 1)) {
     const value = `${fecha.getFullYear()}-${String(fecha.getMonth() + 1).padStart(2, "0")}`;
     opciones.push({ value, label: periodoLabel(value) });
   }
