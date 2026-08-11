@@ -1,7 +1,8 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ArrowLeft, FileDown } from "lucide-react";
+import { ArrowLeft, FileDown, Building2, UserCheck, CheckCircle2 } from "lucide-react";
 import { requireAdmin } from "@/lib/admin";
+import { ThemeToggle } from "@/components/ThemeToggle";
 
 export default async function DetalleEstudiantePage({
   params,
@@ -43,111 +44,171 @@ export default async function DetalleEstudiantePage({
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-neutral-900">
-      <div className="mx-auto max-w-4xl px-4 py-8">
-        <Link href="/admin" className="mb-3 inline-flex items-center gap-1 text-sm text-accent hover:underline">
-          <ArrowLeft size={14} />
-          Volver al panel
-        </Link>
-
-        <h1 className="mb-0.5 text-lg font-semibold">{perfil.nombre}</h1>
-        <p className="mb-6 text-sm text-gray-500 dark:text-gray-400">
-          {perfil.correo} · {perfil.programa_academico ?? "Programa no registrado"}
-        </p>
-
-        <div className="mb-7 grid grid-cols-2 gap-3">
-          <div className="rounded-xl border border-gray-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 p-4">
-            <p className="mb-2 text-sm font-medium">Empresa</p>
-            {empresa ? (
-              <>
-                <p className="text-sm">{empresa.nombre_empresa}</p>
-                <p className="text-xs text-gray-400 dark:text-gray-500 dark:text-gray-400">
-                  {empresa.nit ?? "-"} · {empresa.direccion ?? "-"}
-                </p>
-              </>
-            ) : (
-              <p className="text-xs text-gray-400 dark:text-gray-500 dark:text-gray-400">Aún no diligenciado</p>
-            )}
-          </div>
-          <div className="rounded-xl border border-gray-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 p-4">
-            <p className="mb-2 text-sm font-medium">Jefe inmediato</p>
-            {jefe ? (
-              <>
-                <p className="text-sm">
-                  {jefe.nombre} · {jefe.cargo ?? "-"}
-                </p>
-                <p className="text-xs text-gray-400 dark:text-gray-500 dark:text-gray-400">{jefe.correo ?? "-"}</p>
-              </>
-            ) : (
-              <p className="text-xs text-gray-400 dark:text-gray-500 dark:text-gray-400">Aún no diligenciado</p>
-            )}
-          </div>
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-800 dark:text-slate-100 font-sans transition-colors">
+      <div className="mx-auto max-w-5xl px-6 py-8 space-y-8">
+        {/* Back Link + Theme */}
+        <div className="flex items-center justify-between">
+          <Link
+            href="/admin"
+            className="inline-flex items-center gap-2 text-xs font-bold text-brand-700 dark:text-brand-400 hover:underline"
+          >
+            <ArrowLeft size={16} />
+            Volver al Panel de Administración
+          </Link>
+          <ThemeToggle />
         </div>
 
-        <h2 className="mb-2.5 text-sm font-medium">Avance mes a mes por actividad</h2>
-        <div className="mb-7 overflow-x-auto rounded-xl border border-gray-200 dark:border-neutral-700 bg-white dark:bg-neutral-800">
-          <table className="w-full text-sm">
-            <thead>
-              <tr className="border-b border-gray-200 dark:border-neutral-700 text-left text-xs text-gray-500 dark:text-gray-400">
-                <th className="min-w-[220px] px-4 py-3 font-medium">Actividad</th>
-                {periodos.map((p) => (
-                  <th key={p} className="px-3 py-3 text-center font-medium">{p}</th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {(actividades ?? []).map((act) => (
-                <tr key={act.id} className="border-b border-gray-100 dark:border-neutral-700 last:border-0">
-                  <td className="px-4 py-3">
-                    {act.nombre}
-                    {!act.es_actividad_inicial && (
-                      <div className="mt-0.5 text-xs text-warning">Agregada: {act.observacion_adicion}</div>
-                    )}
-                  </td>
-                  {periodos.map((p) => {
-                    const valor = avancePorActividad.get(act.id)?.get(p);
-                    return (
-                      <td
-                        key={p}
-                        className={`px-3 py-3 text-center ${valor === undefined ? "text-gray-300 dark:text-gray-600" : ""}`}
-                      >
-                        {valor === undefined ? "—" : `${valor}%`}
-                      </td>
-                    );
-                  })}
-                </tr>
-              ))}
-            </tbody>
-          </table>
+        {/* Student Title Banner */}
+        <div className="p-6 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div>
+            <h1 className="text-2xl font-black text-brand-950 dark:text-white tracking-tight">
+              {perfil.nombre}
+            </h1>
+            <p className="text-xs font-medium text-slate-400 dark:text-slate-500 mt-1">
+              {perfil.correo} · <strong className="text-slate-700 dark:text-slate-300">{perfil.programa_academico ?? "Programa no registrado"}</strong>
+            </p>
+          </div>
+          <span className="px-3 py-1 rounded-full bg-brand-50 dark:bg-brand-950 text-brand-800 dark:text-brand-300 text-xs font-bold w-fit">
+            Semestre: {perfil.semestre ?? "N/A"}
+          </span>
         </div>
 
-        <h2 className="mb-2.5 text-sm font-medium">Seguimientos entregados</h2>
-        <div className="flex flex-col gap-2">
-          {(seguimientos ?? []).map((s) => (
-            <div
-              key={s.id}
-              className="flex items-center justify-between rounded-xl border border-gray-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 px-4 py-2.5"
-            >
-              <div className="text-sm">
-                <span className="font-medium">{s.periodo}</span>{" "}
-                <span className={s.estado === "generado" ? "text-xs text-success" : "text-xs text-warning"}>
-                  {s.estado === "generado" ? "Generado" : "Borrador"}
-                </span>
-              </div>
-              {s.estado === "generado" && s.pdf_path && (
-                <a
-                  href={`/api/admin/estudiantes/${estudianteId}/pdf/${s.periodo}`}
-                  className="inline-flex items-center gap-1 text-sm font-medium text-accent hover:underline"
-                >
-                  <FileDown size={14} />
-                  Descargar PDF
-                </a>
-              )}
+        {/* Company & Boss details */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="p-6 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 shadow-sm space-y-3">
+            <div className="flex items-center gap-2 pb-2 border-b border-slate-100 dark:border-slate-800">
+              <Building2 size={18} className="text-brand-700 dark:text-brand-400" />
+              <h3 className="text-xs font-extrabold uppercase tracking-wider text-slate-400">
+                Información de la Empresa
+              </h3>
             </div>
-          ))}
-          {(seguimientos ?? []).length === 0 && (
-            <p className="text-sm text-gray-400 dark:text-gray-500 dark:text-gray-400">Este estudiante aún no ha generado ningún seguimiento.</p>
-          )}
+            {empresa ? (
+              <div className="space-y-1">
+                <p className="text-sm font-extrabold text-slate-900 dark:text-white">
+                  {empresa.nombre_empresa}
+                </p>
+                <p className="text-xs text-slate-500">
+                  NIT: <span className="font-semibold text-slate-700 dark:text-slate-300">{empresa.nit ?? "-"}</span> · Dirección: <span className="font-semibold text-slate-700 dark:text-slate-300">{empresa.direccion ?? "-"}</span>
+                </p>
+                {empresa.sector && <p className="text-xs text-slate-400">Sector: {empresa.sector}</p>}
+              </div>
+            ) : (
+              <p className="text-xs text-slate-400 italic">Aún no ha diligenciado los datos de la empresa.</p>
+            )}
+          </div>
+
+          <div className="p-6 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 shadow-sm space-y-3">
+            <div className="flex items-center gap-2 pb-2 border-b border-slate-100 dark:border-slate-800">
+              <UserCheck size={18} className="text-brand-700 dark:text-brand-400" />
+              <h3 className="text-xs font-extrabold uppercase tracking-wider text-slate-400">
+                Jefe Inmediato
+              </h3>
+            </div>
+            {jefe ? (
+              <div className="space-y-1">
+                <p className="text-sm font-extrabold text-slate-900 dark:text-white">
+                  {jefe.nombre}
+                </p>
+                <p className="text-xs text-slate-500">
+                  Cargo: <span className="font-semibold text-slate-700 dark:text-slate-300">{jefe.cargo ?? "-"}</span>
+                </p>
+                <p className="text-xs text-slate-400">{jefe.correo ?? "-"}</p>
+              </div>
+            ) : (
+              <p className="text-xs text-slate-400 italic">Aún no ha diligenciado el jefe inmediato.</p>
+            )}
+          </div>
+        </div>
+
+        {/* Progress Month to Month Matrix */}
+        <div className="space-y-4">
+          <h2 className="text-base font-bold text-brand-950 dark:text-white">
+            Avance mes a mes por actividad
+          </h2>
+          <div className="overflow-hidden rounded-2xl border border-slate-200/80 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm">
+            <div className="overflow-x-auto">
+              <table className="w-full text-xs text-left">
+                <thead className="bg-slate-50 dark:bg-slate-800/60 border-b border-slate-200 dark:border-slate-800 text-slate-500 font-bold uppercase tracking-wider">
+                  <tr>
+                    <th className="min-w-[240px] px-6 py-4">Actividad</th>
+                    {periodos.map((p) => (
+                      <th key={p} className="px-4 py-4 text-center">{p}</th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-100 dark:divide-slate-800 font-medium">
+                  {(actividades ?? []).map((act) => (
+                    <tr key={act.id} className="hover:bg-slate-50/60 dark:hover:bg-slate-800/40">
+                      <td className="px-6 py-4">
+                        <span className="font-bold text-slate-900 dark:text-white">{act.nombre}</span>
+                        {!act.es_actividad_inicial && (
+                          <div className="mt-1 text-[11px] font-semibold text-amber-600 dark:text-amber-400">
+                            Adicional: {act.observacion_adicion}
+                          </div>
+                        )}
+                      </td>
+                      {periodos.map((p) => {
+                        const valor = avancePorActividad.get(act.id)?.get(p);
+                        return (
+                          <td
+                            key={p}
+                            className={`px-4 py-4 text-center font-bold ${
+                              valor === undefined ? "text-slate-300 dark:text-slate-700" : "text-brand-800 dark:text-brand-300"
+                            }`}
+                          >
+                            {valor === undefined ? "—" : `${valor}%`}
+                          </td>
+                        );
+                      })}
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        {/* Delivered Reports List */}
+        <div className="space-y-4">
+          <h2 className="text-base font-bold text-brand-950 dark:text-white">
+            Seguimientos Entregados
+          </h2>
+          <div className="space-y-3">
+            {(seguimientos ?? []).map((s) => (
+              <div
+                key={s.id}
+                className="flex items-center justify-between p-4 rounded-2xl border border-slate-200/80 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm"
+              >
+                <div className="flex items-center gap-3">
+                  <span className="text-xs font-bold text-slate-900 dark:text-white">{s.periodo}</span>
+                  {s.estado === "generado" ? (
+                    <span className="px-2.5 py-0.5 rounded-full bg-emerald-100 dark:bg-emerald-950 text-emerald-800 dark:text-emerald-300 text-[10px] font-bold">
+                      Generado
+                    </span>
+                  ) : (
+                    <span className="px-2.5 py-0.5 rounded-full bg-amber-100 dark:bg-amber-950 text-amber-800 dark:text-amber-300 text-[10px] font-bold">
+                      Borrador
+                    </span>
+                  )}
+                </div>
+
+                {s.estado === "generado" && s.pdf_path && (
+                  <a
+                    href={`/api/admin/estudiantes/${estudianteId}/pdf/${s.periodo}`}
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-brand-800 hover:bg-brand-900 text-white text-xs font-bold shadow"
+                  >
+                    <FileDown size={14} />
+                    Descargar PDF
+                  </a>
+                )}
+              </div>
+            ))}
+            {(seguimientos ?? []).length === 0 && (
+              <p className="p-6 text-center text-xs font-semibold text-slate-400 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200/80 dark:border-slate-800">
+                Este estudiante aún no ha generado ningún seguimiento.
+              </p>
+            )}
+          </div>
         </div>
       </div>
     </div>

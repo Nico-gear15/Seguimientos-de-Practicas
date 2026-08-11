@@ -3,7 +3,11 @@
 import { useEffect, useState } from "react";
 import { Moon, Sun } from "lucide-react";
 
-export function ThemeToggle() {
+interface ThemeToggleProps {
+  className?: string;
+}
+
+export function ThemeToggle({ className }: ThemeToggleProps) {
   const [oscuro, setOscuro] = useState(false);
   const [montado, setMontado] = useState(false);
 
@@ -19,19 +23,21 @@ export function ThemeToggle() {
     localStorage.setItem("theme", nuevoValor ? "dark" : "light");
   }
 
-  // Evita un parpadeo mostrando el ícono equivocado antes de saber
-  // el tema real (que se decide en el script inline del layout).
   if (!montado) {
-    return <div className="fixed right-4 top-4 z-50 h-9 w-9" />;
+    return <div className={className ?? "flex h-9 w-9 items-center justify-center rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-800 text-slate-500 opacity-50"} />;
   }
 
   return (
     <button
       onClick={alternar}
+      type="button"
       aria-label={oscuro ? "Cambiar a modo claro" : "Cambiar a modo oscuro"}
-      className="fixed right-4 top-4 z-50 flex h-9 w-9 items-center justify-center rounded-full border border-gray-200 bg-white text-gray-600 shadow-sm hover:bg-gray-50 dark:border-neutral-700 dark:bg-neutral-800 dark:text-gray-300 dark:hover:bg-neutral-700"
+      className={
+        className ??
+        "flex h-9 w-9 items-center justify-center rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors shadow-sm"
+      }
     >
-      {oscuro ? <Sun size={16} /> : <Moon size={16} />}
+      {oscuro ? <Sun size={17} className="text-amber-400" /> : <Moon size={17} className="text-slate-600 dark:text-slate-300" />}
     </button>
   );
 }

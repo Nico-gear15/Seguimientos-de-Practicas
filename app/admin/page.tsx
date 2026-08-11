@@ -1,6 +1,7 @@
 import Link from "next/link";
-import { ShieldCheck, LogOut, ArrowRight } from "lucide-react";
+import { ShieldCheck, LogOut, ArrowRight, Users, AlertTriangle, FileText } from "lucide-react";
 import { requireAdmin } from "@/lib/admin";
+import { ThemeToggle } from "@/components/ThemeToggle";
 
 interface FilaEstudiante {
   usuario_id: string;
@@ -16,21 +17,21 @@ interface FilaEstudiante {
 function EstadoBadge({ estado }: { estado: FilaEstudiante["ultimo_estado"] }) {
   if (estado === "generado") {
     return (
-      <span className="rounded-full bg-success-bg px-2.5 py-0.5 text-xs font-medium text-success">
+      <span className="rounded-full bg-emerald-100 dark:bg-emerald-950/80 px-3 py-1 text-[11px] font-bold text-emerald-800 dark:text-emerald-300">
         Al día
       </span>
     );
   }
   if (estado === "borrador") {
     return (
-      <span className="rounded-full bg-warning-bg px-2.5 py-0.5 text-xs font-medium text-warning">
-        Pendiente de entregar
+      <span className="rounded-full bg-amber-100 dark:bg-amber-950/80 px-3 py-1 text-[11px] font-bold text-amber-800 dark:text-amber-300">
+        Pendiente
       </span>
     );
   }
   return (
-    <span className="rounded-full bg-danger-bg px-2.5 py-0.5 text-xs font-medium text-danger">
-      Sin seguimientos
+    <span className="rounded-full bg-rose-100 dark:bg-rose-950/80 px-3 py-1 text-[11px] font-bold text-rose-800 dark:text-rose-300">
+      Sin entregas
     </span>
   );
 }
@@ -44,7 +45,11 @@ export default async function AdminPage() {
     .order("avance_global_promedio", { ascending: true });
 
   if (error) {
-    return <p className="p-8 text-danger">Error al cargar los estudiantes: {error.message}</p>;
+    return (
+      <div className="p-8 text-rose-600 font-bold bg-rose-50 rounded-2xl m-8">
+        Error al cargar los estudiantes: {error.message}
+      </div>
+    );
   }
 
   const filas = (estudiantes ?? []) as FilaEstudiante[];
@@ -52,95 +57,147 @@ export default async function AdminPage() {
   const pendientes = filas.filter((f) => f.ultimo_estado !== "generado").length;
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-neutral-900">
-      <div className="mx-auto max-w-4xl px-4 py-8">
-        <div className="mb-6 flex items-center justify-between">
-          <div>
-            <div className="mb-1 flex items-center gap-2">
-              <ShieldCheck size={19} className="text-accent" />
-              <h1 className="text-[15px] font-medium">Panel de seguimiento — Practicantes</h1>
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-800 dark:text-slate-100 font-sans transition-colors">
+      <div className="mx-auto max-w-6xl px-6 py-8 space-y-8">
+        {/* Header bar */}
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-slate-200/80 dark:border-slate-800">
+          <div className="flex items-center gap-3">
+            <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-brand-900 text-white shadow-lg shadow-brand-950/20">
+              <ShieldCheck size={26} />
             </div>
-            <p className="text-sm text-gray-500 dark:text-gray-400">
-              Vista general del avance de cada estudiante según su último seguimiento mensual.
-            </p>
+            <div>
+              <h1 className="text-xl font-black text-brand-950 dark:text-white tracking-tight">
+                Panel de Coordinación de Prácticas
+              </h1>
+              <p className="text-xs font-medium text-slate-400 dark:text-slate-500">
+                Vista general del avance y entregables de todos los practicantes.
+              </p>
+            </div>
           </div>
-          <form action="/api/admin/logout" method="post">
-            <button
-              type="submit"
-              className="flex items-center gap-1.5 rounded-lg border border-gray-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 px-3 py-1.5 text-xs text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-neutral-700"
-            >
-              <LogOut size={13} />
-              Cerrar sesión
-            </button>
-          </form>
-        </div>
 
-        <div className="mb-6 grid grid-cols-3 gap-3">
-          <div className="rounded-xl border border-gray-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 p-4">
-            <p className="mb-1 text-xs text-gray-500 dark:text-gray-400">Estudiantes</p>
-            <p className="text-2xl font-semibold">{filas.length}</p>
-          </div>
-          <div className="rounded-xl border border-gray-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 p-4">
-            <p className="mb-1 text-xs text-gray-500 dark:text-gray-400">Con seguimiento pendiente</p>
-            <p className="text-2xl font-semibold">{pendientes}</p>
-          </div>
-          <div className="rounded-xl border border-gray-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 p-4">
-            <p className="mb-1 text-xs text-gray-500 dark:text-gray-400">Avance {"<"} 30%</p>
-            <p className={`text-2xl font-semibold ${enRiesgo > 0 ? "text-danger" : ""}`}>{enRiesgo}</p>
+          <div className="flex items-center gap-3">
+            <ThemeToggle />
+            <form action="/api/admin/logout" method="post">
+              <button
+                type="submit"
+                className="inline-flex items-center gap-2 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 px-4 py-2 text-xs font-bold text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors shadow-sm"
+              >
+                <LogOut size={15} />
+                Cerrar sesión
+              </button>
+            </form>
           </div>
         </div>
 
-        <div className="overflow-hidden rounded-xl border border-gray-200 dark:border-neutral-700 bg-white dark:bg-neutral-800">
-          <table className="w-full text-sm">
-            <thead>
-              <tr className="border-b border-gray-200 dark:border-neutral-700 text-left text-xs text-gray-500 dark:text-gray-400">
-                <th className="px-4 py-3 font-medium">Estudiante</th>
-                <th className="px-4 py-3 font-medium">Empresa</th>
-                <th className="px-4 py-3 font-medium">Último periodo</th>
-                <th className="px-4 py-3 font-medium">Estado</th>
-                <th className="px-4 py-3 font-medium">Avance</th>
-                <th className="px-4 py-3"></th>
-              </tr>
-            </thead>
-            <tbody>
-              {filas.map((f) => (
-                <tr key={f.usuario_id} className="border-b border-gray-100 dark:border-neutral-700 last:border-0 hover:bg-gray-50 dark:hover:bg-neutral-700">
-                  <td className="px-4 py-3">
-                    <div className="font-medium">{f.nombre}</div>
-                    <div className="text-xs text-gray-400 dark:text-gray-500 dark:text-gray-400">{f.correo}</div>
-                  </td>
-                  <td className="px-4 py-3">{f.nombre_empresa ?? "-"}</td>
-                  <td className="px-4 py-3">{f.ultimo_periodo ?? "-"}</td>
-                  <td className="px-4 py-3">
-                    <EstadoBadge estado={f.ultimo_estado} />
-                  </td>
-                  <td className="min-w-[140px] px-4 py-3">
-                    <div className="flex items-center gap-2">
-                      <div className="h-1.5 flex-1 overflow-hidden rounded bg-gray-100 dark:bg-neutral-700">
-                        <div
-                          className={`h-full rounded ${f.avance_global_promedio < 30 ? "bg-danger" : "bg-accent"}`}
-                          style={{ width: `${f.avance_global_promedio}%` }}
-                        />
-                      </div>
-                      <span className="w-9 text-xs text-gray-500 dark:text-gray-400">{f.avance_global_promedio}%</span>
-                    </div>
-                  </td>
-                  <td className="px-4 py-3">
-                    <Link
-                      href={`/admin/${f.usuario_id}`}
-                      className="inline-flex items-center gap-1 text-xs font-medium text-accent hover:underline"
-                    >
-                      Ver detalle
-                      <ArrowRight size={12} />
-                    </Link>
-                  </td>
+        {/* Stats Row */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="p-6 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 shadow-sm flex items-center justify-between">
+            <div>
+              <p className="text-xs font-bold text-slate-400 uppercase tracking-wider">
+                Total Practicantes
+              </p>
+              <p className="text-3xl font-black text-brand-950 dark:text-white mt-1">
+                {filas.length}
+              </p>
+            </div>
+            <div className="p-3 rounded-2xl bg-brand-50 dark:bg-brand-950 text-brand-700 dark:text-brand-400">
+              <Users size={24} />
+            </div>
+          </div>
+
+          <div className="p-6 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 shadow-sm flex items-center justify-between">
+            <div>
+              <p className="text-xs font-bold text-slate-400 uppercase tracking-wider">
+                Entregas Pendientes
+              </p>
+              <p className="text-3xl font-black text-amber-600 dark:text-amber-400 mt-1">
+                {pendientes}
+              </p>
+            </div>
+            <div className="p-3 rounded-2xl bg-amber-50 dark:bg-amber-950 text-amber-600 dark:text-amber-400">
+              <FileText size={24} />
+            </div>
+          </div>
+
+          <div className="p-6 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 shadow-sm flex items-center justify-between">
+            <div>
+              <p className="text-xs font-bold text-slate-400 uppercase tracking-wider">
+                Avance {"<"} 30%
+              </p>
+              <p className={`text-3xl font-black mt-1 ${enRiesgo > 0 ? "text-rose-600 dark:text-rose-400" : "text-slate-900 dark:text-white"}`}>
+                {enRiesgo}
+              </p>
+            </div>
+            <div className="p-3 rounded-2xl bg-rose-50 dark:bg-rose-950 text-rose-600 dark:text-rose-400">
+              <AlertTriangle size={24} />
+            </div>
+          </div>
+        </div>
+
+        {/* Table Container */}
+        <div className="overflow-hidden rounded-2xl border border-slate-200/80 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm">
+          <div className="overflow-x-auto">
+            <table className="w-full text-xs text-left">
+              <thead className="bg-slate-50 dark:bg-slate-800/60 border-b border-slate-200 dark:border-slate-800 text-slate-500 font-bold uppercase tracking-wider">
+                <tr>
+                  <th className="px-6 py-4">Estudiante</th>
+                  <th className="px-6 py-4">Empresa</th>
+                  <th className="px-6 py-4">Último Periodo</th>
+                  <th className="px-6 py-4">Estado</th>
+                  <th className="px-6 py-4">Avance Global</th>
+                  <th className="px-6 py-4 text-right">Acción</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody className="divide-y divide-slate-100 dark:divide-slate-800 font-medium">
+                {filas.map((f) => (
+                  <tr key={f.usuario_id} className="hover:bg-slate-50/60 dark:hover:bg-slate-800/40 transition-colors">
+                    <td className="px-6 py-4">
+                      <div className="font-bold text-slate-900 dark:text-white">{f.nombre}</div>
+                      <div className="text-[11px] text-slate-400">{f.correo}</div>
+                    </td>
+                    <td className="px-6 py-4 text-slate-700 dark:text-slate-300 font-semibold">
+                      {f.nombre_empresa ?? "-"}
+                    </td>
+                    <td className="px-6 py-4 text-slate-600 dark:text-slate-400 font-bold">
+                      {f.ultimo_periodo ?? "-"}
+                    </td>
+                    <td className="px-6 py-4">
+                      <EstadoBadge estado={f.ultimo_estado} />
+                    </td>
+                    <td className="px-6 py-4 min-w-[160px]">
+                      <div className="flex items-center gap-3">
+                        <div className="h-2 flex-1 overflow-hidden rounded-full bg-slate-100 dark:bg-slate-800">
+                          <div
+                            className={`h-full rounded-full transition-all ${
+                              f.avance_global_promedio < 30 ? "bg-rose-500" : "bg-brand-700 dark:bg-brand-500"
+                            }`}
+                            style={{ width: `${f.avance_global_promedio}%` }}
+                          />
+                        </div>
+                        <span className="font-black text-slate-900 dark:text-white text-xs w-8">
+                          {f.avance_global_promedio}%
+                        </span>
+                      </div>
+                    </td>
+                    <td className="px-6 py-4 text-right">
+                      <Link
+                        href={`/admin/${f.usuario_id}`}
+                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-brand-50 dark:bg-brand-950 text-brand-800 dark:text-brand-300 font-bold hover:bg-brand-100 dark:hover:bg-brand-900 transition-colors"
+                      >
+                        Detalle
+                        <ArrowRight size={13} />
+                      </Link>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
 
           {filas.length === 0 && (
-            <p className="px-4 py-6 text-sm text-gray-400 dark:text-gray-500 dark:text-gray-400">Aún no hay estudiantes registrados.</p>
+            <p className="p-8 text-center text-xs font-semibold text-slate-400">
+              Aún no hay estudiantes registrados en la plataforma.
+            </p>
           )}
         </div>
       </div>

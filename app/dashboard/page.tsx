@@ -1,60 +1,26 @@
+import Link from "next/link";
 import { redirect } from "next/navigation";
-import { Briefcase, LogOut } from "lucide-react";
+import {
+  AlertTriangle,
+  FileText,
+  Calendar as CalendarIcon,
+  ArrowRight,
+  CheckCircle2,
+  Users,
+  Clock,
+  Briefcase,
+  FileUp,
+} from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
+import { StudentShell } from "@/components/navigation/StudentShell";
 import { DatosGeneralesForm } from "@/components/dashboard/DatosGeneralesForm";
-import { ActividadForm } from "@/components/dashboard/ActividadForm";
-import { SeguimientoMensual } from "@/components/dashboard/SeguimientoMensual";
-import { cerrarSesion } from "@/app/dashboard/actions";
-
-const MESES = [
-  "enero", "febrero", "marzo", "abril", "mayo", "junio",
-  "julio", "agosto", "septiembre", "octubre", "noviembre", "diciembre",
-];
 
 function periodoActual() {
   const ahora = new Date();
   return `${ahora.getFullYear()}-${String(ahora.getMonth() + 1).padStart(2, "0")}`;
 }
 
-function normalizarPeriodo(periodo?: string | null) {
-  if (!periodo) return null;
-  const match = /^\d{4}-(0[1-9]|1[0-2])$/.exec(periodo);
-  return match ? periodo : null;
-}
-
-function periodoLabel(periodo: string) {
-  const [anio, mes] = periodo.split("-").map(Number);
-  const indice = (mes ?? 1) - 1;
-  return `${MESES[indice] ?? "mes"} de ${anio}`;
-}
-
-function opcionesPeriodos() {
-  const opciones: Array<{ value: string; label: string }> = [];
-  const inicio = new Date(2026, 5, 1);
-  const fin = new Date(2027, 1, 1);
-
-  for (let fecha = new Date(inicio); fecha <= fin; fecha.setMonth(fecha.getMonth() + 1)) {
-    const value = `${fecha.getFullYear()}-${String(fecha.getMonth() + 1).padStart(2, "0")}`;
-    opciones.push({ value, label: periodoLabel(value) });
-  }
-
-  return opciones;
-}
-
-function iniciales(nombre: string) {
-  return nombre
-    .split(" ")
-    .filter(Boolean)
-    .slice(0, 2)
-    .map((p) => p[0]?.toUpperCase())
-    .join("");
-}
-
-export default async function DashboardPage({
-  searchParams,
-}: {
-  searchParams?: Promise<{ periodo?: string | string[] }>;
-}) {
+export default async function DashboardPage() {
   const supabase = await createClient();
 
   const {
@@ -63,12 +29,7 @@ export default async function DashboardPage({
 
   if (!user) redirect("/login");
 
-  const params = await searchParams;
-  const periodoSeleccionado = normalizarPeriodo(
-    Array.isArray(params?.periodo) ? params.periodo[0] : params?.periodo
-  );
-  const periodo = periodoSeleccionado ?? periodoActual();
-  const label = periodoLabel(periodo);
+  const periodo = periodoActual();
 
   const [{ data: perfil }, { data: empresa }, { data: jefe }, { data: actividades }, { data: seguimientoMes }] =
     await Promise.all([
@@ -106,7 +67,6 @@ export default async function DashboardPage({
 
   const actividadesConAvance = (actividades ?? []).map((actividad) => {
     const avance = avancesDelMes.get(actividad.id);
-
     return {
       actividad,
       porcentajeActual: avance?.porcentaje ?? 0,
@@ -120,143 +80,211 @@ export default async function DashboardPage({
       )
     : 0;
 
+  const horasEstimadas = Math.round((avanceGlobal * 300) / 100);
+
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-neutral-900">
-      <div className="mx-auto max-w-3xl px-4 py-8">
-        <div className="mb-6 flex items-center justify-between border-b border-gray-200 dark:border-neutral-700 pb-3">
-          <div className="flex items-center gap-2">
-            <Briefcase size={19} className="text-accent" />
-            <span className="text-[15px] font-medium">Seguimiento de práctica</span>
-          </div>
-          <div className="flex items-center gap-3">
-            <div className="flex h-8 w-8 items-center justify-center rounded-full bg-accent-100 text-xs font-medium text-accent">
-              {iniciales(perfil?.nombre ?? "?")}
+    <StudentShell
+      title="Dashboard"
+      nombreEstudiante={perfil?.nombre ?? "Estudiante"}
+      correoEstudiante={perfil?.correo}
+    >
+      <div className="space-y-8">
+        {/* Welcome Banner */}
+        <div>
+          <h1 className="text-2xl font-black tracking-tight text-brand-900 dark:text-white">
+            Hola, <span className="text-brand-700 dark:text-brand-400">{perfil?.nombre ?? "Estudiante"}</span>!
+          </h1>
+
+          {/* Pending submission alert */}
+          {!datosGeneralesCompletos ? (
+            <div className="mt-3 inline-flex items-center gap-2.5 rounded-xl bg-amber-50 dark:bg-amber-950/50 border border-amber-200 dark:border-amber-800/60 px-4 py-2.5 text-xs font-semibold text-amber-800 dark:text-amber-300">
+              <AlertTriangle size={16} className="text-amber-600 dark:text-amber-400 flex-shrink-0" />
+              <span>Antes de continuar, completa los datos de tu empresa y jefe inmediato.</span>
             </div>
-            <form action={cerrarSesion}>
-              <button
-                type="submit"
-                className="flex items-center gap-1 rounded-lg border border-gray-200 dark:border-neutral-700 px-2.5 py-1.5 text-xs text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-neutral-700"
-              >
-                <LogOut size={13} />
-                Salir
-              </button>
-            </form>
-          </div>
+          ) : seguimientoMes?.estado !== "generado" ? (
+            <div className="mt-3 inline-flex items-center gap-2.5 rounded-xl bg-rose-50 dark:bg-rose-950/50 border border-rose-200 dark:border-rose-800/60 px-4 py-2.5 text-xs font-semibold text-rose-800 dark:text-rose-300">
+              <AlertTriangle size={16} className="text-rose-600 dark:text-rose-400 flex-shrink-0" />
+              <span>Tiene una entrega pendiente este mes</span>
+            </div>
+          ) : null}
         </div>
 
         {!datosGeneralesCompletos ? (
-          <div>
-            <p className="mb-5 rounded-lg bg-warning-bg px-3.5 py-2.5 text-sm text-warning">
-              Antes de continuar, completa los datos de tu empresa y de tu jefe inmediato.
-            </p>
+          <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200/80 dark:border-slate-800 p-6 shadow-sm">
+            <h2 className="text-lg font-bold text-brand-900 dark:text-white mb-4">
+              Completa tu Información General
+            </h2>
             <DatosGeneralesForm perfil={perfil!} empresa={empresa ?? null} jefe={jefe ?? null} />
           </div>
         ) : (
-          <div className="flex flex-col gap-5">
-            <div className="grid grid-cols-3 gap-3">
-              <div className="rounded-xl bg-white dark:bg-neutral-800 border border-gray-200 dark:border-neutral-700 p-4">
-                <p className="mb-1 text-xs text-gray-500 dark:text-gray-400">Avance global</p>
-                <p className="text-2xl font-semibold">{avanceGlobal}%</p>
-              </div>
-              <div className="rounded-xl bg-white dark:bg-neutral-800 border border-gray-200 dark:border-neutral-700 p-4">
-                <p className="mb-1 text-xs text-gray-500 dark:text-gray-400">Actividades activas</p>
-                <p className="text-2xl font-semibold">{actividadesConAvance.length}</p>
-              </div>
-              <div className="rounded-xl bg-white dark:bg-neutral-800 border border-gray-200 dark:border-neutral-700 p-4">
-                <p className="mb-1 text-xs text-gray-500 dark:text-gray-400">Seguimientos entregados</p>
-                <p className="text-2xl font-semibold">{seguimientosGenerados ?? 0}</p>
-              </div>
-            </div>
-
-            <div className="rounded-xl bg-white dark:bg-neutral-800 border border-gray-200 dark:border-neutral-700 p-4">
-              <p className="mb-3 text-sm font-medium">Datos generales</p>
-              <div className="grid grid-cols-3 gap-3 text-sm">
+          <>
+            {/* Top Cards Section */}
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+              {/* Main Progress Card (2 cols) */}
+              <div className="lg:col-span-2 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200/80 dark:border-slate-800 p-7 shadow-sm flex flex-col justify-between">
                 <div>
-                  <p className="mb-0.5 text-xs text-gray-400 dark:text-gray-500 dark:text-gray-400">Estudiante</p>
-                  <p>{perfil?.nombre}</p>
-                </div>
-                <div>
-                  <p className="mb-0.5 text-xs text-gray-400 dark:text-gray-500 dark:text-gray-400">Empresa</p>
-                  <p>{empresa!.nombre_empresa}</p>
-                </div>
-                <div>
-                  <p className="mb-0.5 text-xs text-gray-400 dark:text-gray-500 dark:text-gray-400">Jefe inmediato</p>
-                  <p>{jefe!.nombre}</p>
-                </div>
-              </div>
-            </div>
-
-            <div className="rounded-xl border border-gray-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 p-4">
-              <div className="mb-4 flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
-                <div>
-                  <p className="text-sm font-medium">Mes de seguimiento</p>
-                  <p className="text-xs text-gray-500 dark:text-gray-400">
-                    Selecciona cualquier periodo para registrar o editar su avance.
+                  <h2 className="text-lg font-bold text-brand-900 dark:text-white tracking-tight">
+                    Avance Total de Prácticas
+                  </h2>
+                  <p className="text-xs font-medium text-slate-400 dark:text-slate-500 mt-1">
+                    Progreso hacia el cumplimiento de horas requeridas.
                   </p>
                 </div>
-                <form method="get" className="flex items-center gap-2">
-                  <select
-                    name="periodo"
-                    defaultValue={periodo}
-                    className="rounded-lg border border-gray-300 dark:border-neutral-600 bg-white dark:bg-neutral-900 px-3 py-2 text-sm text-gray-900 dark:text-gray-100"
-                  >
-                    {opcionesPeriodos().map((opcion) => (
-                      <option key={opcion.value} value={opcion.value}>
-                        {opcion.label}
-                      </option>
-                    ))}
-                  </select>
-                  <button
-                    type="submit"
-                    className="rounded-lg border border-gray-200 dark:border-neutral-700 px-3 py-2 text-sm font-medium text-gray-700 dark:text-gray-200"
-                  >
-                    Ver mes
-                  </button>
-                </form>
-              </div>
 
-              <div className="mb-2.5 flex items-center justify-between">
-                <p className="text-sm font-medium">Actividades asignadas</p>
-                <ActividadForm requiereObservacion={!!seguimientosGenerados} />
-              </div>
-
-              {actividadesConAvance.length === 0 && (
-                <p className="text-sm text-gray-400 dark:text-gray-500 dark:text-gray-400">Aún no tienes actividades registradas.</p>
-              )}
-
-              <div className="flex flex-col gap-2.5">
-                {actividadesConAvance.map(({ actividad, porcentajeActual }) => (
-                  <div key={actividad.id} className="rounded-xl border border-gray-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 p-3.5">
-                    <div className="mb-2 flex justify-between text-sm">
-                      <span>{actividad.nombre}</span>
-                      <span className="font-medium text-gray-500 dark:text-gray-400">{porcentajeActual}%</span>
-                    </div>
-                    <div className="h-1.5 overflow-hidden rounded bg-gray-100 dark:bg-neutral-700">
-                      <div
-                        className="h-full rounded bg-accent"
-                        style={{ width: `${porcentajeActual}%` }}
-                      />
-                    </div>
-                    {!actividad.es_actividad_inicial && actividad.observacion_adicion && (
-                      <div className="mt-2 flex gap-1.5 rounded-lg bg-accent-50 px-2.5 py-1.5 text-xs text-accent">
-                        Actividad nueva: {actividad.observacion_adicion}
-                      </div>
-                    )}
+                <div className="my-6 grid grid-cols-1 sm:grid-cols-3 gap-5 items-center">
+                  {/* Big Progress Box */}
+                  <div className="flex flex-col items-center justify-center p-6 rounded-2xl border-4 border-brand-800 dark:border-brand-600 bg-brand-50/50 dark:bg-brand-950/30 text-center">
+                    <span className="text-3xl font-black text-brand-900 dark:text-white">
+                      {avanceGlobal}%
+                    </span>
+                    <span className="text-xs font-semibold text-brand-700 dark:text-brand-400 mt-1">
+                      Completado
+                    </span>
                   </div>
-                ))}
+
+                  {/* Stat Box 1 */}
+                  <div className="p-5 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-100 dark:border-slate-800 flex flex-col justify-center">
+                    <span className="text-[11px] font-bold text-slate-400 dark:text-slate-400 tracking-wider uppercase">
+                      HORAS REGISTRADAS
+                    </span>
+                    <div className="mt-2 flex items-baseline gap-1">
+                      <span className="text-2xl font-extrabold text-slate-900 dark:text-white">
+                        {horasEstimadas}
+                      </span>
+                      <span className="text-xs text-slate-400 font-medium">/ 300 hrs</span>
+                    </div>
+                  </div>
+
+                  {/* Stat Box 2 */}
+                  <div className="p-5 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-100 dark:border-slate-800 flex flex-col justify-center">
+                    <span className="text-[11px] font-bold text-slate-400 dark:text-slate-400 tracking-wider uppercase">
+                      ENTREGABLES
+                    </span>
+                    <div className="mt-2 flex items-baseline gap-1">
+                      <span className="text-2xl font-extrabold text-slate-900 dark:text-white">
+                        {seguimientosGenerados ?? 0}
+                      </span>
+                      <span className="text-xs text-slate-400 font-medium">/ 5 entregados</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="pt-2 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between text-xs text-slate-500">
+                  <span>Empresa: <strong className="text-slate-700 dark:text-slate-300">{empresa.nombre_empresa}</strong></span>
+                  <span>Jefe: <strong className="text-slate-700 dark:text-slate-300">{jefe.nombre}</strong></span>
+                </div>
+              </div>
+
+              {/* Right Column Cards */}
+              <div className="space-y-5 flex flex-col justify-between">
+                {/* Indigo Solid Card: Reporte Mensual */}
+                <div className="p-6 rounded-2xl bg-brand-900 text-white shadow-lg shadow-brand-950/20 relative overflow-hidden flex flex-col justify-between">
+                  <div className="absolute right-3 top-3 opacity-10 pointer-events-none">
+                    <FileText size={100} />
+                  </div>
+                  <div>
+                    <h3 className="text-lg font-extrabold leading-snug">Reporte Mensual</h3>
+                    <p className="text-xs text-brand-100/80 mt-1.5 leading-relaxed">
+                      Genera el documento consolidado de tus actividades del mes para revisión.
+                    </p>
+                  </div>
+                  <Link
+                    href="/reportes"
+                    className="mt-6 inline-flex items-center justify-center gap-2 w-full rounded-xl bg-white text-brand-900 font-bold py-2.5 text-xs shadow hover:bg-brand-50 transition-colors"
+                  >
+                    <FileUp size={15} />
+                    Generar Reporte del Mes
+                  </Link>
+                </div>
+
+                {/* Blue Accent Card: Recordatorio */}
+                <div className="p-6 rounded-2xl bg-brand-700 text-white shadow-md shadow-brand-900/10 flex items-start gap-4">
+                  <div className="p-2.5 rounded-xl bg-white/10 flex-shrink-0">
+                    <CalendarIcon size={22} className="text-white" />
+                  </div>
+                  <div>
+                    <span className="text-[10px] font-bold uppercase tracking-wider text-brand-200">
+                      RECORDATORIO IMPORTANTE
+                    </span>
+                    <p className="text-xs font-medium text-white mt-1 leading-relaxed">
+                      Próximo Seguimiento Mensual: Fin de mes. No olvides subirlo al Aula Virtual.
+                    </p>
+                  </div>
+                </div>
               </div>
             </div>
 
-            <SeguimientoMensual
-              key={periodo}
-              actividades={actividadesConAvance}
-              periodo={periodo}
-              periodoLabel={label}
-              seguimientoGeneradoId={seguimientoMes?.estado === "generado" ? seguimientoMes.id : null}
-            />
-          </div>
+            {/* Bottom Section: Actividades Recientes */}
+            <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200/80 dark:border-slate-800 p-7 shadow-sm space-y-5">
+              <div className="flex items-center justify-between">
+                <h2 className="text-lg font-bold text-brand-900 dark:text-white tracking-tight">
+                  Actividades Recientes
+                </h2>
+                <Link
+                  href="/actividades"
+                  className="inline-flex items-center gap-1 text-xs font-bold text-brand-700 dark:text-brand-400 hover:underline"
+                >
+                  Ver todas
+                  <ArrowRight size={14} />
+                </Link>
+              </div>
+
+              {actividadesConAvance.length === 0 ? (
+                <p className="text-xs font-medium text-slate-400 dark:text-slate-500 py-4">
+                  Aún no tienes actividades registradas. Ve a la sección de Actividades para comenzar.
+                </p>
+              ) : (
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  {actividadesConAvance.slice(0, 3).map(({ actividad, porcentajeActual }, idx) => {
+                    const statusConfig =
+                      porcentajeActual === 100
+                        ? { label: "COMPLETADO", color: "bg-emerald-100 text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-300", icon: CheckCircle2 }
+                        : porcentajeActual > 0
+                        ? { label: "EN PROGRESO", color: "bg-emerald-100 text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-300", icon: Users }
+                        : { label: "POR INICIAR", color: "bg-amber-100 text-amber-800 dark:bg-amber-950/60 dark:text-amber-300", icon: Clock };
+
+                    const StatusIcon = statusConfig.icon;
+
+                    return (
+                      <div
+                        key={actividad.id}
+                        className="p-5 rounded-2xl border border-slate-200/70 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/40 flex flex-col justify-between space-y-4"
+                      >
+                        <div className="flex items-center justify-between">
+                          <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-brand-50 dark:bg-brand-950 text-brand-700 dark:text-brand-400">
+                            <StatusIcon size={18} />
+                          </div>
+                          <span className={`px-2.5 py-1 rounded-full text-[10px] font-bold tracking-wider ${statusConfig.color}`}>
+                            {statusConfig.label}
+                          </span>
+                        </div>
+
+                        <div>
+                          <h4 className="text-xs font-bold text-slate-900 dark:text-white line-clamp-2">
+                            {actividad.nombre}
+                          </h4>
+                        </div>
+
+                        <div>
+                          <div className="h-2 overflow-hidden rounded-full bg-slate-200 dark:bg-slate-700 mb-2">
+                            <div
+                              className="h-full rounded-full bg-emerald-500 transition-all duration-500"
+                              style={{ width: `${porcentajeActual}%` }}
+                            />
+                          </div>
+                          <div className="flex justify-end text-[11px] font-extrabold text-slate-500 dark:text-slate-400">
+                            {porcentajeActual}%
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
+          </>
         )}
       </div>
-    </div>
+    </StudentShell>
   );
 }

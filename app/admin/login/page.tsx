@@ -2,7 +2,8 @@
 
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
-import { ShieldCheck, LoaderCircle } from "lucide-react";
+import { ShieldCheck, LoaderCircle, User, Lock } from "lucide-react";
+import { ThemeToggle } from "@/components/ThemeToggle";
 
 export default function AdminLoginPage() {
   const router = useRouter();
@@ -39,58 +40,100 @@ export default function AdminLoginPage() {
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gray-50 dark:bg-neutral-900 px-4">
-      <div className="w-full max-w-sm rounded-xl border border-gray-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 p-6">
-        <div className="mb-5 flex items-center gap-2">
-          <ShieldCheck size={19} className="text-accent" />
-          <span className="text-[15px] font-medium">Panel de administración</span>
+    <div className="relative flex min-h-screen items-center justify-center bg-slate-50 dark:bg-slate-950 px-4 transition-colors">
+      <div className="absolute top-6 right-6">
+        <ThemeToggle />
+      </div>
+
+      <div className="w-full max-w-md rounded-3xl border border-slate-200/80 dark:border-slate-800 bg-white dark:bg-slate-900 p-8 shadow-2xl shadow-brand-950/10 space-y-6">
+        {/* Admin Header */}
+        <div className="text-center space-y-3">
+          <div className="inline-flex h-14 w-14 items-center justify-center rounded-2xl bg-brand-900 text-white shadow-lg shadow-brand-950/30">
+            <ShieldCheck size={30} />
+          </div>
+          <div>
+            <h1 className="text-2xl font-black tracking-tight text-brand-950 dark:text-white">
+              Panel de Administración
+            </h1>
+            <p className="text-xs font-semibold text-brand-700 dark:text-brand-400 mt-0.5">
+              Coordinación de Prácticas Profesionales
+            </p>
+          </div>
+          <p className="text-xs font-medium text-slate-400 dark:text-slate-500 pt-1">
+            Acceso exclusivo para coordinadores y supervisores de práctica.
+          </p>
         </div>
 
-        <p className="mb-5 text-sm text-gray-500 dark:text-gray-400">Acceso exclusivo para coordinadores.</p>
-
-        <form onSubmit={handleSubmit} className="flex flex-col gap-3">
+        {/* Form */}
+        <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="mb-1 block text-xs text-gray-500 dark:text-gray-400">Usuario</label>
-            <input
-              type="text"
-              value={usuario}
-              onChange={(e) => setUsuario(e.target.value)}
-              autoComplete="username"
-              required
-              disabled={cargandoTotal}
-              className="w-full rounded-lg border border-gray-300 dark:border-neutral-600 bg-white dark:bg-neutral-900 px-3 py-2 text-sm text-gray-900 dark:text-gray-100 disabled:cursor-not-allowed disabled:opacity-70"
-            />
-          </div>
-          <div>
-            <label className="mb-1 block text-xs text-gray-500 dark:text-gray-400">Contraseña</label>
-            <input
-              type="password"
-              value={contrasena}
-              onChange={(e) => setContrasena(e.target.value)}
-              autoComplete="current-password"
-              required
-              disabled={cargandoTotal}
-              className="w-full rounded-lg border border-gray-300 dark:border-neutral-600 bg-white dark:bg-neutral-900 px-3 py-2 text-sm text-gray-900 dark:text-gray-100 disabled:cursor-not-allowed disabled:opacity-70"
-            />
+            <label className="mb-1.5 block text-xs font-bold text-slate-700 dark:text-slate-300">
+              Usuario Coordinador
+            </label>
+            <div className="relative">
+              <User size={16} className="absolute left-3.5 top-3 text-slate-400" />
+              <input
+                type="text"
+                value={usuario}
+                onChange={(e) => setUsuario(e.target.value)}
+                autoComplete="username"
+                required
+                placeholder="admin"
+                disabled={cargandoTotal}
+                className="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/50 pl-10 pr-3.5 py-2.5 text-xs text-slate-900 dark:text-slate-100 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-brand-600 disabled:opacity-60 transition-all"
+              />
+            </div>
           </div>
 
-          {error && <p className="text-sm text-danger">{error}</p>}
+          <div>
+            <label className="mb-1.5 block text-xs font-bold text-slate-700 dark:text-slate-300">
+              Contraseña
+            </label>
+            <div className="relative">
+              <Lock size={16} className="absolute left-3.5 top-3 text-slate-400" />
+              <input
+                type="password"
+                value={contrasena}
+                onChange={(e) => setContrasena(e.target.value)}
+                autoComplete="current-password"
+                required
+                placeholder="••••••••"
+                disabled={cargandoTotal}
+                className="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/50 pl-10 pr-3.5 py-2.5 text-xs text-slate-900 dark:text-slate-100 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-brand-600 disabled:opacity-60 transition-all"
+              />
+            </div>
+          </div>
+
+          {error && (
+            <div className="p-3 rounded-xl bg-rose-50 dark:bg-rose-950/50 border border-rose-200 dark:border-rose-800 text-xs font-bold text-rose-600 dark:text-rose-400">
+              {error}
+            </div>
+          )}
 
           <button
             type="submit"
             disabled={cargandoTotal}
-            className="mt-1 inline-flex items-center justify-center gap-2 rounded-lg bg-accent py-2 text-sm font-medium text-white disabled:cursor-not-allowed disabled:opacity-70"
+            className="w-full inline-flex items-center justify-center gap-2 rounded-xl bg-brand-900 hover:bg-brand-950 text-white py-3 text-xs font-bold shadow-lg shadow-brand-900/20 disabled:cursor-not-allowed disabled:opacity-70 transition-all"
           >
             {cargandoTotal ? (
               <>
                 <LoaderCircle size={16} className="animate-spin" />
-                <span>Ingresando...</span>
+                <span>Verificando...</span>
               </>
             ) : (
-              "Ingresar"
+              "Ingresar al Panel"
             )}
           </button>
         </form>
+
+        <div className="pt-2 text-center border-t border-slate-100 dark:border-slate-800">
+          <p className="text-[11px] font-medium text-slate-400">
+            ¿Eres practicante?{" "}
+            <a href="/login" className="font-bold text-brand-700 dark:text-brand-400 hover:underline">
+              Iniciar Sesión de Estudiante
+            </a>
+          </p>
+        </div>
       </div>
     </div>
   );

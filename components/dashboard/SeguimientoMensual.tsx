@@ -1,7 +1,7 @@
 "use client";
 
 import { useActionState, useState } from "react";
-import { FileDown, Save } from "lucide-react";
+import { FileDown, Save, CheckCircle2, Clock } from "lucide-react";
 import { guardarAvanceMensual } from "@/app/dashboard/actions";
 import type { Actividad } from "@/lib/types";
 
@@ -37,21 +37,37 @@ export function SeguimientoMensual({
     };
   }, estadoInicial);
 
-  const soloLectura = false;
+  const soloLectura = Boolean(seguimientoGeneradoId);
 
   return (
-    <div className="rounded-xl border border-gray-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 p-4">
-      <div className="mb-3 flex items-center justify-between">
+    <div className="rounded-2xl border border-slate-200/80 dark:border-slate-800 bg-white dark:bg-slate-900 p-6 shadow-sm space-y-6">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 pb-4 border-b border-slate-100 dark:border-slate-800">
         <div>
-          <p className="text-sm font-medium">Seguimiento de {periodoLabel}</p>
-          <p className="text-xs text-gray-500 dark:text-gray-400">
-            Actualiza el % de avance de cada actividad y guarda para conservar el registro del mes seleccionado.
+          <div className="flex items-center gap-2.5">
+            <h3 className="text-base font-bold text-brand-900 dark:text-white">
+              Seguimiento de {periodoLabel}
+            </h3>
+            {seguimientoGeneradoId ? (
+              <span className="rounded-full bg-emerald-100 dark:bg-emerald-950/80 text-emerald-800 dark:text-emerald-300 px-2.5 py-0.5 text-[10px] font-extrabold uppercase tracking-wider">
+                Generado
+              </span>
+            ) : (
+              <span className="rounded-full bg-amber-100 dark:bg-amber-950/80 text-amber-800 dark:text-amber-300 px-2.5 py-0.5 text-[10px] font-extrabold uppercase tracking-wider">
+                Borrador
+              </span>
+            )}
+          </div>
+          <p className="text-xs font-medium text-slate-400 dark:text-slate-500 mt-1">
+            {soloLectura
+              ? "Este seguimiento ya fue generado y se encuentra bloqueado para futuras ediciones."
+              : "Actualiza el % de avance de cada actividad y guarda para conservar el registro del mes."}
           </p>
         </div>
+
         {seguimientoGeneradoId && (
           <a
             href={`/api/seguimientos/${seguimientoGeneradoId}/pdf`}
-            className="inline-flex items-center gap-1.5 rounded-lg border border-accent/30 px-3 py-1.5 text-sm font-medium text-accent hover:bg-accent-50 dark:hover:bg-neutral-700"
+            className="inline-flex items-center justify-center gap-2 rounded-xl bg-brand-800 hover:bg-brand-900 text-white px-4 py-2 text-xs font-bold shadow-md shadow-brand-900/20 transition-all"
           >
             <FileDown size={15} />
             Descargar PDF
@@ -59,67 +75,111 @@ export function SeguimientoMensual({
         )}
       </div>
 
-      <form action={formAction} className="flex flex-col gap-4">
+      <form action={formAction} className="space-y-4">
         <input type="hidden" name="periodo" value={periodo} />
 
-        {actividades.map(({ actividad, porcentajeActual, comentarioActual }) => (
-          <div key={actividad.id}>
-            <div className="mb-1 flex items-center justify-between text-sm">
-              <span>{actividad.nombre}</span>
-              <span className="font-medium text-gray-600 dark:text-gray-300 dark:text-gray-600">
-                {valores[actividad.id] ?? porcentajeActual}%
-              </span>
+        {actividades.map(({ actividad, porcentajeActual, comentarioActual }, idx) => {
+          const valActual = valores[actividad.id] ?? porcentajeActual;
+          const refCode = `INT-${String(idx + 1).padStart(3, "0")}`;
+
+          return (
+            <div
+              key={actividad.id}
+              className="rounded-xl border border-slate-200/70 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/40 p-4 space-y-3"
+            >
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                <div>
+                  <h4 className="text-xs font-bold text-slate-900 dark:text-white">
+                    {actividad.nombre}
+                  </h4>
+                  <div className="flex items-center gap-2 mt-1">
+                    {valActual === 100 ? (
+                      <span className="px-2 py-0.5 rounded-md bg-emerald-100 dark:bg-emerald-950/70 text-emerald-800 dark:text-emerald-300 text-[10px] font-bold">
+                        Completed
+                      </span>
+                    ) : (
+                      <span className="px-2 py-0.5 rounded-md bg-brand-100 dark:bg-brand-950/70 text-brand-800 dark:text-brand-300 text-[10px] font-bold">
+                        In progress
+                      </span>
+                    )}
+                    <span className="text-[10px] font-semibold text-slate-400">
+                      Ref: {refCode}
+                    </span>
+                  </div>
+                </div>
+
+                <span className="text-xs font-black text-brand-900 dark:text-brand-400">
+                  {valActual}%
+                </span>
+              </div>
+
+              {/* Slider Input */}
+              <div className="space-y-1.5">
+                <input
+                  type="range"
+                  name={`avance_${actividad.id}`}
+                  min={0}
+                  max={100}
+                  step={5}
+                  disabled={soloLectura}
+                  defaultValue={porcentajeActual}
+                  onChange={(e) =>
+                    setValores((prev) => ({ ...prev, [actividad.id]: Number(e.target.value) }))
+                  }
+                  className="w-full accent-brand-700 dark:accent-brand-500 cursor-pointer disabled:cursor-not-allowed disabled:opacity-50"
+                />
+              </div>
+
+              {/* Comment Input */}
+              <input
+                type="text"
+                name={`comentario_${actividad.id}`}
+                placeholder="Escribe un comentario opcional sobre el avance de esta tarea..."
+                defaultValue={comentarioActual ?? ""}
+                disabled={soloLectura}
+                className="w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 py-1.5 text-xs text-slate-900 dark:text-slate-100 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-brand-600 disabled:opacity-50"
+              />
             </div>
-            <input
-              type="range"
-              name={`avance_${actividad.id}`}
-              min={0}
-              max={100}
-              step={5}
-              disabled={soloLectura}
-              defaultValue={porcentajeActual}
-              onChange={(e) =>
-                setValores((prev) => ({ ...prev, [actividad.id]: Number(e.target.value) }))
-              }
-              className="w-full accent-accent disabled:opacity-50"
-            />
-            <input
-              type="text"
-              name={`comentario_${actividad.id}`}
-              placeholder="Comentario del avance (opcional)"
-              defaultValue={comentarioActual ?? ""}
-              disabled={soloLectura}
-              className="mt-1.5 w-full rounded-lg border border-gray-200 dark:border-neutral-700 bg-white dark:bg-neutral-900 px-2.5 py-1.5 text-xs text-gray-900 dark:text-gray-100 disabled:opacity-50"
-            />
-          </div>
-        ))}
+          );
+        })}
 
         {actividades.length === 0 && (
-          <p className="text-sm text-gray-400 dark:text-gray-500 dark:text-gray-400">Agrega actividades para poder registrar su avance.</p>
+          <p className="text-xs font-medium text-slate-400 py-4 text-center">
+            Aún no tienes actividades registradas para este periodo.
+          </p>
         )}
 
-        {estado.error && <p className="text-sm text-danger">{estado.error}</p>}
+        {estado.error && (
+          <p className="text-xs font-bold text-rose-600 dark:text-rose-400">{estado.error}</p>
+        )}
 
         {!soloLectura && actividades.length > 0 && (
-          <button
-            type="submit"
-            disabled={enviando}
-            className="inline-flex w-fit items-center gap-1.5 rounded-lg bg-accent px-4 py-2 text-sm font-medium text-white disabled:opacity-60"
-          >
-            <Save size={15} />
-            {enviando ? "Guardando..." : "Guardar avance"}
-          </button>
+          <div className="pt-2 flex justify-end">
+            <button
+              type="submit"
+              disabled={enviando}
+              className="inline-flex items-center gap-2 rounded-xl bg-brand-800 hover:bg-brand-900 text-white px-5 py-2.5 text-xs font-bold shadow-md shadow-brand-900/20 disabled:opacity-60 transition-all"
+            >
+              <Save size={16} />
+              {enviando ? "Guardando..." : "Guardar avance mensual"}
+            </button>
+          </div>
         )}
       </form>
 
       {!soloLectura && estado.seguimientoId && (
-        <a
-          href={`/api/seguimientos/${estado.seguimientoId}/pdf`}
-          className="mt-3 inline-flex items-center gap-1.5 rounded-lg border border-accent/30 px-3 py-1.5 text-sm font-medium text-accent hover:bg-accent-50 dark:hover:bg-neutral-700"
-        >
-          <FileDown size={15} />
-          Guardar y generar PDF de {periodoLabel}
-        </a>
+        <div className="p-4 rounded-xl bg-brand-50 dark:bg-brand-950/40 border border-brand-200 dark:border-brand-900 flex items-center justify-between">
+          <span className="text-xs font-semibold text-brand-900 dark:text-brand-200">
+            ¡Avances guardados correctamente! Puedes generar el PDF ahora.
+          </span>
+          <a
+            href={`/api/seguimientos/${estado.seguimientoId}/pdf`}
+            className="inline-flex items-center gap-1.5 rounded-xl bg-brand-800 hover:bg-brand-900 text-white px-3.5 py-2 text-xs font-bold shadow"
+          >
+            <FileDown size={15} />
+            Generar PDF de {periodoLabel}
+          </a>
+        </div>
       )}
     </div>
   );

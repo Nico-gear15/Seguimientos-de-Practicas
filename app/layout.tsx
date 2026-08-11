@@ -1,9 +1,8 @@
 import type { Metadata } from "next";
 import "./globals.css";
-import { ThemeToggle } from "@/components/ThemeToggle";
 
 export const metadata: Metadata = {
-  title: "Seguimiento de práctica profesional",
+  title: "Internship Portal | Seguimiento de Práctica Profesional",
   description: "Plataforma de seguimiento mensual de práctica profesional",
 };
 
@@ -28,8 +27,7 @@ export default function RootLayout({
       <head>
         <script dangerouslySetInnerHTML={{ __html: scriptAntiParpadeo }} />
       </head>
-      <body className="font-sans antialiased">
-        <ThemeToggle />
+      <body className="font-sans antialiased text-slate-800 bg-slate-50 dark:bg-slate-950 dark:text-slate-100 min-h-screen">
         {children}
       </body>
     </html>

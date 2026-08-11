@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
 import { Resend } from "resend";
 
+import { timingSafeEqual } from "crypto";
+
 /**
  * GET /api/cron/recordatorios
  *
@@ -22,10 +24,21 @@ function periodoActual() {
 
 export async function GET(req: NextRequest) {
   // Protege el endpoint para que solo Vercel Cron (con el secret) lo dispare
-  const authHeader = req.headers.get("authorization");
-  if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
+  const authHeader = req.headers.get("authorization") ?? "";
+  const expectedHeader = `Bearer ${process.env.CRON_SECRET}`;
+
+  const authBuf = Buffer.from(authHeader);
+  const expectedBuf = Buffer.from(expectedHeader);
+
+  const isValidSecret =
+    process.env.CRON_SECRET &&
+    authBuf.length === expectedBuf.length &&
+    timingSafeEqual(authBuf, expectedBuf);
+
+  if (!isValidSecret) {
     return NextResponse.json({ error: "No autorizado" }, { status: 401 });
   }
+
 
   const supabaseAdmin = createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,

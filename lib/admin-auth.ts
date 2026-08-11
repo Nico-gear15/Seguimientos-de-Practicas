@@ -45,5 +45,17 @@ export const ADMIN_COOKIE = {
 export function credencialesValidas(usuario: string, contrasena: string): boolean {
   const usuarioEsperado = process.env.ADMIN_USERNAME ?? "admin";
   const contrasenaEsperada = process.env.ADMIN_PASSWORD ?? "admin123456789";
-  return usuario === usuarioEsperado && contrasena === contrasenaEsperada;
+
+  const userBuf = Buffer.from(usuario);
+  const expectedUserBuf = Buffer.from(usuarioEsperado);
+  const passBuf = Buffer.from(contrasena);
+  const expectedPassBuf = Buffer.from(contrasenaEsperada);
+
+  const userMatches =
+    userBuf.length === expectedUserBuf.length && timingSafeEqual(userBuf, expectedUserBuf);
+  const passMatches =
+    passBuf.length === expectedPassBuf.length && timingSafeEqual(passBuf, expectedPassBuf);
+
+  return userMatches && passMatches;
 }
+

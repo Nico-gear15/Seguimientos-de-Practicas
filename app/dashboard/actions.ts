@@ -170,6 +170,10 @@ export async function guardarAvanceMensual(formData: FormData) {
     .eq("periodo", periodoSeleccionado)
     .maybeSingle();
 
+  if (existente?.estado === "generado") {
+    return { error: "Este seguimiento ya fue generado y no se puede modificar (RF09)." };
+  }
+
   let seguimientoId = existente?.id as string | undefined;
 
   if (!seguimientoId) {

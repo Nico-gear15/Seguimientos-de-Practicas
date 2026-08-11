@@ -71,14 +71,17 @@ export async function GET(
     jefeInmediato,
     periodo: seguimiento.periodo,
     fechaGeneracion,
-    actividades: (avances ?? []).map((a: any) => ({
-      actividad: a.actividades,
-      porcentajeAvance: Number(a.porcentaje_avance),
-      comentario: a.comentario ?? null,
-      // Se considera "nueva este mes" si su fecha de asignación cae dentro del periodo
-      esNuevaEsteMes: !a.actividades.es_actividad_inicial &&
-        a.actividades.fecha_asignacion?.slice(0, 7) === seguimiento.periodo,
-    })),
+    actividades: (avances ?? [])
+      .filter((a: any) => Boolean(a?.actividades))
+      .map((a: any) => ({
+        actividad: a.actividades,
+        porcentajeAvance: Number(a.porcentaje_avance),
+        comentario: a.comentario ?? null,
+        // Se considera "nueva este mes" si su fecha de asignación cae dentro del periodo
+        esNuevaEsteMes:
+          !a.actividades.es_actividad_inicial &&
+          a.actividades.fecha_asignacion?.slice(0, 7) === seguimiento.periodo,
+      })),
   };
 
   const pdfBuffer = await renderToBuffer(<SeguimientoDocument datos={datos} />);
