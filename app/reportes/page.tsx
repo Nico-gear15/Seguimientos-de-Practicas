@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { StudentShell } from "@/components/navigation/StudentShell";
+import { SelectorPeriodo } from "@/components/dashboard/SelectorPeriodo";
 import { FileDown, CheckSquare } from "lucide-react";
 
 const MESES = [
@@ -127,30 +128,17 @@ export default async function ReportesPage({
               </p>
             </div>
 
-            <form method="get" className="space-y-4">
-              <div>
-                <label className="mb-1.5 block text-xs font-bold text-slate-700 dark:text-slate-300">
-                  Seleccionar Mes
-                </label>
-                <select
-                  name="periodo"
-                  defaultValue={periodo}
-                  className="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 px-3.5 py-2.5 text-xs font-bold text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-brand-600"
-                >
-                  {opcionesPeriodos().map((opcion) => (
-                    <option key={opcion.value} value={opcion.value}>
-                      {opcion.label}
-                    </option>
-                  ))}
-                </select>
-              </div>
-              <button
-                type="submit"
-                className="w-full rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 py-2 text-xs font-bold transition-colors"
-              >
-                Actualizar Vista Previa
-              </button>
-            </form>
+            <div className="space-y-1.5">
+              <label className="block text-xs font-bold text-slate-700 dark:text-slate-300">
+                Seleccionar Mes
+              </label>
+              <SelectorPeriodo
+                opciones={opcionesPeriodos()}
+                periodoActual={periodo}
+                basePath="/reportes"
+                className="w-full"
+              />
+            </div>
 
             <div className="pt-4 border-t border-slate-100 dark:border-slate-800 space-y-3">
               <span className="text-xs font-bold text-slate-700 dark:text-slate-300 block">

@@ -3,6 +3,7 @@ import { createClient } from "@/lib/supabase/server";
 import { StudentShell } from "@/components/navigation/StudentShell";
 import { ActividadForm } from "@/components/dashboard/ActividadForm";
 import { SeguimientoMensual } from "@/components/dashboard/SeguimientoMensual";
+import { SelectorPeriodo } from "@/components/dashboard/SelectorPeriodo";
 
 const MESES = [
   "enero", "febrero", "marzo", "abril", "mayo", "junio",
@@ -143,26 +144,12 @@ export default async function ActividadesPage({
             </p>
           </div>
 
-          {/* Month Selector Dropdown */}
-          <form method="get" className="flex items-center gap-2">
-            <select
-              name="periodo"
-              defaultValue={periodo}
-              className="rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 px-3.5 py-2 text-xs font-bold text-slate-800 dark:text-slate-100 shadow-sm focus:outline-none focus:ring-2 focus:ring-brand-600"
-            >
-              {opcionesPeriodos().map((opcion) => (
-                <option key={opcion.value} value={opcion.value}>
-                  {opcion.label}
-                </option>
-              ))}
-            </select>
-            <button
-              type="submit"
-              className="rounded-xl bg-slate-900 dark:bg-slate-800 text-white px-4 py-2 text-xs font-bold shadow hover:bg-slate-800 dark:hover:bg-slate-700 transition-colors"
-            >
-              Ver mes
-            </button>
-          </form>
+          {/* Month Selector Dropdown (Actualización Automática) */}
+          <SelectorPeriodo
+            opciones={opcionesPeriodos()}
+            periodoActual={periodo}
+            basePath="/actividades"
+          />
         </div>
 
         {/* Main Grid matching Mockup 2 */}
