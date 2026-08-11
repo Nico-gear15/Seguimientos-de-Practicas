@@ -120,17 +120,17 @@ export default async function ReportesPage({
           <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200/80 dark:border-slate-800 p-6 shadow-sm space-y-6">
             <div>
               <h2 className="text-lg font-bold text-brand-900 dark:text-white tracking-tight">
-                Report Settings
+                Configuración del Reporte
               </h2>
               <p className="text-xs font-medium text-slate-400 dark:text-slate-500 mt-1">
-                Configure your monthly tracking report before generating the PDF.
+                Configura tu informe mensual de seguimiento antes de generar el archivo PDF.
               </p>
             </div>
 
             <form method="get" className="space-y-4">
               <div>
                 <label className="mb-1.5 block text-xs font-bold text-slate-700 dark:text-slate-300">
-                  Select Month
+                  Seleccionar Mes
                 </label>
                 <select
                   name="periodo"
@@ -154,20 +154,20 @@ export default async function ReportesPage({
 
             <div className="pt-4 border-t border-slate-100 dark:border-slate-800 space-y-3">
               <span className="text-xs font-bold text-slate-700 dark:text-slate-300 block">
-                Signature Configuration
+                Configuración de Firmas
               </span>
               <div className="space-y-2 text-xs font-medium text-slate-600 dark:text-slate-400">
                 <label className="flex items-center gap-2 cursor-pointer">
                   <input type="checkbox" defaultChecked className="rounded text-brand-700 accent-brand-700" />
-                  <span>Include Student Signature Line</span>
+                  <span>Incluir línea de firma del practicante</span>
                 </label>
                 <label className="flex items-center gap-2 cursor-pointer">
                   <input type="checkbox" defaultChecked className="rounded text-brand-700 accent-brand-700" />
-                  <span>Include Supervisor Signature Line</span>
+                  <span>Incluir línea de firma del jefe inmediato</span>
                 </label>
                 <label className="flex items-center gap-2 cursor-pointer">
                   <input type="checkbox" defaultChecked className="rounded text-brand-700 accent-brand-700" />
-                  <span>Include Academic Advisor Line</span>
+                  <span>Incluir línea de firma del monitor académico</span>
                 </label>
               </div>
             </div>

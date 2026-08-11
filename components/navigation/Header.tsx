@@ -7,7 +7,7 @@ interface HeaderProps {
   title?: string;
 }
 
-export function Header({ title = "Internship Platform" }: HeaderProps) {
+export function Header({ title = "Plataforma de Prácticas" }: HeaderProps) {
   const fechaActual = new Date().toLocaleDateString("es-CO", {
     month: "short",
     day: "numeric",

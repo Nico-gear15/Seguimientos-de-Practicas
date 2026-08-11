@@ -95,15 +95,15 @@ export function SeguimientoMensual({
                   <div className="flex items-center gap-2 mt-1">
                     {valActual === 100 ? (
                       <span className="px-2 py-0.5 rounded-md bg-emerald-100 dark:bg-emerald-950/70 text-emerald-800 dark:text-emerald-300 text-[10px] font-bold">
-                        Completed
+                        Completado
                       </span>
                     ) : (
                       <span className="px-2 py-0.5 rounded-md bg-brand-100 dark:bg-brand-950/70 text-brand-800 dark:text-brand-300 text-[10px] font-bold">
-                        In progress
+                        En progreso
                       </span>
                     )}
                     <span className="text-[10px] font-semibold text-slate-400">
-                      Ref: {refCode}
+                      Ref: ACT-{String(idx + 1).padStart(3, "0")}
                     </span>
                   </div>
                 </div>

@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Internship Portal | Seguimiento de Práctica Profesional",
+  title: "Portal de Prácticas | Seguimiento de Práctica Profesional",
   description: "Plataforma de seguimiento mensual de práctica profesional",
 };
 

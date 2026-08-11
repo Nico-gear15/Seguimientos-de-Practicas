@@ -58,10 +58,10 @@ export default function LoginPage() {
           </div>
           <div>
             <h1 className="text-2xl font-black tracking-tight text-brand-950 dark:text-white">
-              Internship Portal
+              Portal de Prácticas
             </h1>
             <p className="text-xs font-semibold text-brand-700 dark:text-brand-400 mt-0.5">
-              Academic Milestone Tracker
+              Seguimiento Académico
             </p>
           </div>
           <p className="text-xs font-medium text-slate-400 dark:text-slate-500 pt-1">

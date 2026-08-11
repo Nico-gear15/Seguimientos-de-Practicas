@@ -47,10 +47,10 @@ export function Sidebar({ nombreEstudiante = "Estudiante", correoEstudiante }: S
           </div>
           <div>
             <h1 className="text-base font-bold tracking-tight text-brand-900 dark:text-white leading-tight">
-              Internship Portal
+              Portal de Prácticas
             </h1>
             <p className="text-[11px] font-medium text-slate-400 dark:text-slate-500">
-              Academic Milestone Tracker
+              Seguimiento Académico
             </p>
           </div>
         </div>
