@@ -90,14 +90,14 @@ export function Sidebar({ nombreEstudiante = "Estudiante", correoEstudiante }: S
         <div className="flex items-center justify-between">
           <Link
             href="/perfil"
-            className="flex items-center gap-3 overflow-hidden group hover:opacity-85 transition-opacity min-w-0"
+            className="flex items-center gap-3 overflow-hidden p-1.5 -ml-1.5 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800/80 transition-all min-w-0 flex-1"
             title="Ir a mi perfil"
           >
-            <div className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full bg-brand-100 text-brand-800 font-bold text-xs dark:bg-brand-900/80 dark:text-brand-200 group-hover:ring-2 group-hover:ring-brand-500 transition-all">
+            <div className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full bg-brand-100 text-brand-800 font-bold text-xs dark:bg-brand-900/80 dark:text-brand-200">
               {iniciales(nombreEstudiante)}
             </div>
             <div className="min-w-0">
-              <p className="text-xs font-bold text-slate-800 dark:text-slate-200 truncate group-hover:text-brand-700 dark:group-hover:text-brand-400 transition-colors">
+              <p className="text-xs font-bold text-slate-800 dark:text-slate-200 truncate hover:text-brand-700 dark:hover:text-brand-400 transition-colors">
                 {nombreEstudiante}
               </p>
               <p className="text-[10px] text-slate-400 dark:text-slate-500 truncate">

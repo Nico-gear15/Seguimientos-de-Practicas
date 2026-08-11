@@ -144,18 +144,21 @@ export default async function ActividadesPage({
             </p>
           </div>
 
-          {/* Month Selector Dropdown (Actualización Automática) */}
-          <SelectorPeriodo
-            opciones={opcionesPeriodos()}
-            periodoActual={periodo}
-            basePath="/actividades"
-          />
+          {/* Header Actions: Selector de mes + Botón Añadir Actividad */}
+          <div className="flex items-center gap-3">
+            <SelectorPeriodo
+              opciones={opcionesPeriodos()}
+              periodoActual={periodo}
+              basePath="/actividades"
+            />
+            <ActividadForm requiereObservacion={!!seguimientosGenerados} />
+          </div>
         </div>
 
-        {/* Main Grid matching Mockup 2 */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* Main Grid: Ambas columnas alineadas al mismo nivel superior */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
           {/* Left Column: Progreso Mensual (1 col) */}
-          <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200/80 dark:border-slate-800 p-6 shadow-sm h-fit self-start space-y-6">
+          <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200/80 dark:border-slate-800 p-6 shadow-sm space-y-6">
             <div>
               <h2 className="text-lg font-bold text-brand-900 dark:text-white tracking-tight">
                 Progreso Mensual
@@ -204,15 +207,8 @@ export default async function ActividadesPage({
             </div>
           </div>
 
-          {/* Right Column: Actividades (2 cols) */}
-          <div className="lg:col-span-2 space-y-6">
-            <div className="flex items-center justify-between">
-              <h2 className="text-lg font-bold text-brand-900 dark:text-white tracking-tight">
-                Actividades
-              </h2>
-              <ActividadForm requiereObservacion={!!seguimientosGenerados} />
-            </div>
-
+          {/* Right Column: Seguimiento Mensual (2 cols) */}
+          <div className="lg:col-span-2">
             <SeguimientoMensual
               key={periodo}
               actividades={actividadesConAvance}
