@@ -4,6 +4,11 @@ import "./globals.css";
 export const metadata: Metadata = {
   title: "Portal de Prácticas | Seguimiento de Práctica Profesional",
   description: "Plataforma de seguimiento mensual de práctica profesional",
+  icons: {
+    icon: "/icon.svg",
+    shortcut: "/icon.svg",
+    apple: "/icon.svg",
+  },
 };
 
 const scriptAntiParpadeo = `
@@ -25,6 +30,7 @@ export default function RootLayout({
   return (
     <html lang="es">
       <head>
+        <link rel="icon" href="/icon.svg" type="image/svg+xml" />
         <script dangerouslySetInnerHTML={{ __html: scriptAntiParpadeo }} />
       </head>
       <body className="font-sans antialiased text-slate-800 bg-slate-50 dark:bg-slate-950 dark:text-slate-100 min-h-screen">

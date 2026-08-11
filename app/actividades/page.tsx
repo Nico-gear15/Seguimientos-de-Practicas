@@ -155,7 +155,7 @@ export default async function ActividadesPage({
         {/* Main Grid matching Mockup 2 */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Left Column: Progreso Mensual (1 col) */}
-          <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200/80 dark:border-slate-800 p-6 shadow-sm flex flex-col justify-between space-y-6">
+          <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200/80 dark:border-slate-800 p-6 shadow-sm h-fit self-start space-y-6">
             <div>
               <h2 className="text-lg font-bold text-brand-900 dark:text-white tracking-tight">
                 Progreso Mensual
@@ -166,7 +166,7 @@ export default async function ActividadesPage({
             </div>
 
             {/* Big Progress Stat */}
-            <div className="py-6 space-y-4">
+            <div className="py-2 space-y-3">
               <div className="flex items-baseline justify-between">
                 <span className="text-4xl font-black text-brand-900 dark:text-white">
                   {avanceGlobal}%

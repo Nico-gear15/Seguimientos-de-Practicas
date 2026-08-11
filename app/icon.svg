@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="100%" height="100%">
+  <defs>
+    <linearGradient id="brand-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#4f46e5"/>
+      <stop offset="100%" stop-color="#312e81"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Redondeado suave de marca -->
+  <rect x="16" y="16" width="480" height="480" rx="120" fill="url(#brand-grad)" />
+
+  <!-- Birrete de graduación en blanco -->
+  <g fill="none" stroke="#ffffff" stroke-width="26" stroke-linecap="round" stroke-linejoin="round">
+    <!-- Parte superior romboide del birrete -->
+    <polygon points="256,112 432,196 256,280 80,196" fill="#ffffff" fill-opacity="0.2" />
+    
+    <!-- Base inferior del birrete -->
+    <path d="M144,230 v70 c0,36 100,64 224,0 v-70" />
+    
+    <!-- Borla lateral -->
+    <path d="M390,216 v110" stroke-width="22" />
+    <circle cx="390" cy="340" r="16" fill="#818cf8" stroke="#ffffff" stroke-width="10" />
+  </g>
+
+  <!-- Pequeño punto de verificación / logro -->
+  <circle cx="390" cy="130" r="28" fill="#10b981" />
+  <path d="M378,130 l8,8 l16,-16" stroke="#ffffff" stroke-width="10" stroke-linecap="round" stroke-linejoin="round" fill="none" />
+</svg>
