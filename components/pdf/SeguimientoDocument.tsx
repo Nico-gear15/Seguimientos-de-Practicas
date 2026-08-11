@@ -8,261 +8,425 @@ import {
 } from "@react-pdf/renderer";
 import type { DatosSeguimientoPDF } from "@/lib/types";
 
-const COLOR_HEADER_BG = "#1e2749";
-const COLOR_SECCION = "#276749";
-const COLOR_LABEL = "#5b6b82";
-const COLOR_TEXTO = "#1a1a1a";
-const COLOR_BARRA_FONDO = "#e5e7eb";
-const COLOR_BARRA_RELLENO = "#22a06b";
+const COLOR_BRAND_BG = "#312e81"; // Deep Indigo Header
+const COLOR_HEADER_TEXT = "#ffffff";
+const COLOR_BORDER = "#1e293b"; // Dark Slate border
+const COLOR_SECTION_BG = "#e0e7ff"; // Soft Indigo Section Header
+const COLOR_TEXT = "#0f172a";
+const COLOR_LABEL_BG = "#f1f5f9";
 
 const styles = StyleSheet.create({
   page: {
-    fontSize: 10,
-    fontFamily: "Helvetica",
-    color: COLOR_TEXTO,
-  },
-  header: {
-    backgroundColor: COLOR_HEADER_BG,
-    color: "#ffffff",
-    paddingTop: 28,
-    paddingBottom: 20,
-    paddingHorizontal: 32,
-  },
-  headerTitulo: {
-    fontSize: 19,
-    fontWeight: 700,
-    marginBottom: 6,
-  },
-  headerSubtitulo: {
-    fontSize: 11,
-    color: "#d6dbe8",
-    marginBottom: 3,
-  },
-  headerFecha: {
     fontSize: 8.5,
-    color: "#9aa3ba",
+    fontFamily: "Helvetica",
+    color: COLOR_TEXT,
+    backgroundColor: "#ffffff",
+    padding: 24,
   },
-  cuerpo: {
-    padding: 32,
+  // Contenedor principal estilo tabla institucional
+  container: {
+    border: "1.5pt solid " + COLOR_BORDER,
   },
-  seccion: {
-    marginBottom: 18,
+  // Título Principal Superior
+  mainTitleBox: {
+    backgroundColor: COLOR_BRAND_BG,
+    paddingVertical: 8,
+    paddingHorizontal: 12,
+    alignItems: "center",
+    justifyContent: "center",
+    borderBottom: "1.5pt solid " + COLOR_BORDER,
   },
-  seccionTitulo: {
-    fontSize: 12,
+  mainTitleText: {
+    color: COLOR_HEADER_TEXT,
+    fontSize: 10,
     fontWeight: 700,
-    color: COLOR_SECCION,
-    marginBottom: 4,
+    textAlign: "center",
+    textTransform: "uppercase",
   },
-  seccionLinea: {
-    borderBottom: "1pt solid #e2e2e2",
-    marginBottom: 10,
-  },
-  fila: {
+  // Filas de Información General
+  infoRow: {
     flexDirection: "row",
-    marginBottom: 10,
+    borderBottom: "1pt solid " + COLOR_BORDER,
   },
-  campo: {
-    flex: 1,
-    paddingRight: 12,
+  labelCell: {
+    width: "35%",
+    backgroundColor: COLOR_LABEL_BG,
+    padding: 5,
+    borderRight: "1pt solid " + COLOR_BORDER,
+    justifyContent: "center",
   },
-  etiqueta: {
+  labelText: {
     fontSize: 7.5,
     fontWeight: 700,
-    color: COLOR_LABEL,
-    letterSpacing: 0.5,
-    marginBottom: 2,
+    color: COLOR_TEXT,
+    textTransform: "uppercase",
   },
-  valor: {
-    fontSize: 10,
-    color: COLOR_TEXTO,
+  valueCell: {
+    width: "65%",
+    padding: 5,
+    justifyContent: "center",
   },
-  actividad: {
-    marginBottom: 14,
-  },
-  actividadFila: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    marginBottom: 5,
-  },
-  actividadNombre: {
-    fontSize: 10.5,
-    fontWeight: 700,
-  },
-  actividadPorcentaje: {
-    fontSize: 10.5,
-    fontWeight: 700,
-  },
-  barraFondo: {
-    height: 6,
-    backgroundColor: COLOR_BARRA_FONDO,
-    borderRadius: 3,
-  },
-  barraRelleno: {
-    height: 6,
-    backgroundColor: COLOR_BARRA_RELLENO,
-    borderRadius: 3,
-  },
-  comentario: {
+  valueText: {
     fontSize: 8.5,
+    color: COLOR_TEXT,
+    fontWeight: 400,
+  },
+  // Fila de Organización + Fechas compuestas
+  orgLabelCell: {
+    width: "18%",
+    backgroundColor: COLOR_LABEL_BG,
+    padding: 5,
+    borderRight: "1pt solid " + COLOR_BORDER,
+    justifyContent: "center",
+  },
+  orgValueCell: {
+    width: "32%",
+    padding: 5,
+    borderRight: "1pt solid " + COLOR_BORDER,
+    justifyContent: "center",
+  },
+  datesContainer: {
+    width: "50%",
+    flexDirection: "column",
+  },
+  dateSubRow: {
+    flexDirection: "row",
+    height: 16,
+  },
+  dateSubRowBorder: {
+    borderBottom: "1pt solid " + COLOR_BORDER,
+  },
+  dateLabelCell: {
+    width: "60%",
+    backgroundColor: COLOR_LABEL_BG,
+    padding: 3,
+    borderRight: "1pt solid " + COLOR_BORDER,
+    justifyContent: "center",
+  },
+  dateValueCell: {
+    width: "40%",
+    padding: 3,
+    justifyContent: "center",
+  },
+  // Banner de Sección (Fondo Gris / Índigo Institucional)
+  sectionHeaderBar: {
+    backgroundColor: COLOR_SECTION_BG,
+    paddingVertical: 5,
+    paddingHorizontal: 8,
+    borderBottom: "1pt solid " + COLOR_BORDER,
+    alignItems: "center",
+  },
+  sectionHeaderText: {
+    fontSize: 8.5,
+    fontWeight: 700,
+    color: COLOR_BRAND_BG,
+    textTransform: "uppercase",
+    textAlign: "center",
+  },
+  sectionSubText: {
+    fontSize: 7,
     fontStyle: "italic",
-    color: "#666666",
-    marginTop: 4,
+    color: "#475569",
+    textAlign: "center",
+    marginTop: 1,
   },
-  firmasFila: {
+  // Encabezados de Tablas de Actividades
+  tableHeaderRow: {
     flexDirection: "row",
-    marginTop: 10,
+    backgroundColor: COLOR_LABEL_BG,
+    borderBottom: "1pt solid " + COLOR_BORDER,
   },
-  firmaColumna: {
-    flex: 1,
-    paddingRight: 14,
+  colActividadHeader: {
+    width: "45%",
+    padding: 4,
+    borderRight: "1pt solid " + COLOR_BORDER,
+    justifyContent: "center",
   },
-  firmaEspacio: {
-    height: 44,
+  colCumplimientoHeader: {
+    width: "15%",
+    padding: 4,
+    borderRight: "1pt solid " + COLOR_BORDER,
+    justifyContent: "center",
+    alignItems: "center",
   },
-  firmaLinea: {
-    borderTop: "1pt solid #999999",
-    marginBottom: 5,
+  colExplicacionHeader: {
+    width: "40%",
+    padding: 4,
+    justifyContent: "center",
   },
-  firmaRol: {
+  tableHeaderText: {
+    fontSize: 7.5,
+    fontWeight: 700,
+    color: COLOR_TEXT,
+    textAlign: "center",
+  },
+  // Filas de Datos de Actividades
+  tableDataRow: {
+    flexDirection: "row",
+    borderBottom: "1pt solid " + COLOR_BORDER,
+    minHeight: 22,
+  },
+  colActividadData: {
+    width: "45%",
+    padding: 4,
+    borderRight: "1pt solid " + COLOR_BORDER,
+    justifyContent: "center",
+  },
+  colCumplimientoData: {
+    width: "15%",
+    padding: 4,
+    borderRight: "1pt solid " + COLOR_BORDER,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  colExplicacionData: {
+    width: "40%",
+    padding: 4,
+    justifyContent: "center",
+  },
+  tableDataText: {
+    fontSize: 8,
+    color: COLOR_TEXT,
+  },
+  tableDataTextCenter: {
     fontSize: 8.5,
     fontWeight: 700,
-    color: COLOR_TEXTO,
-    marginBottom: 1,
+    color: COLOR_BRAND_BG,
+    textAlign: "center",
   },
-  firmaNombre: {
-    fontSize: 8.5,
-    color: COLOR_LABEL,
+  // Sección de Firmas
+  firmasRow: {
+    flexDirection: "row",
+    marginTop: 20,
+    gap: 12,
+  },
+  firmaBox: {
+    flex: 1,
+    border: "1pt solid " + COLOR_BORDER,
+    padding: 6,
+    height: 65,
+    justifyContent: "space-between",
+  },
+  firmaLine: {
+    borderTop: "1pt solid #475569",
+    marginTop: 25,
+    paddingTop: 3,
+  },
+  firmaRoleText: {
+    fontSize: 7.5,
+    fontWeight: 700,
+    color: COLOR_TEXT,
+    textAlign: "center",
+    textTransform: "uppercase",
+  },
+  firmaNameText: {
+    fontSize: 7,
+    color: "#64748b",
+    textAlign: "center",
   },
 });
 
 function formatearPeriodo(periodo: string) {
   const [anio, mes] = periodo.split("-");
   const meses = [
-    "enero", "febrero", "marzo", "abril", "mayo", "junio",
-    "julio", "agosto", "septiembre", "octubre", "noviembre", "diciembre",
+    "Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio",
+    "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre",
   ];
   return `${meses[Number(mes) - 1]} de ${anio}`;
-}
-
-function Campo({ etiqueta, valor }: { etiqueta: string; valor: string }) {
-  return (
-    <View style={styles.campo}>
-      <Text style={styles.etiqueta}>{etiqueta}</Text>
-      <Text style={styles.valor}>{valor || "-"}</Text>
-    </View>
-  );
 }
 
 export function SeguimientoDocument({ datos }: { datos: DatosSeguimientoPDF }) {
   const { perfil, empresa, jefeInmediato, periodo, fechaGeneracion, actividades } = datos;
 
+  // Clasificar actividades entre Propuesta de Mejora y Plan de Trabajo
+  const propuestaMejora = actividades.filter((a) => !a.actividad.es_actividad_inicial);
+  const planDeTrabajo = actividades.filter((a) => a.actividad.es_actividad_inicial);
+
   return (
     <Document>
       <Page size="LETTER" style={styles.page}>
-        <View style={styles.header}>
-          <Text style={styles.headerTitulo}>Seguimiento de Práctica Profesional</Text>
-          <Text style={styles.headerSubtitulo}>Periodo: {formatearPeriodo(periodo)}</Text>
-          <Text style={styles.headerFecha}>Generado el {fechaGeneracion}</Text>
+        <View style={styles.container}>
+          {/* Título Principal */}
+          <View style={styles.mainTitleBox}>
+            <Text style={styles.mainTitleText}>
+              FORMATO SEGUIMIENTO DEL PLAN DE TRABAJO Y PROPUESTA DE MEJORA DE LA PRÁCTICA PROFESIONAL
+            </Text>
+          </View>
+
+          {/* Fila 1: Nombre Practicante */}
+          <View style={styles.infoRow}>
+            <View style={styles.labelCell}>
+              <Text style={styles.labelText}>NOMBRE COMPLETO PRACTICANTE:</Text>
+            </View>
+            <View style={styles.valueCell}>
+              <Text style={styles.valueText}>{perfil.nombre}</Text>
+            </View>
+          </View>
+
+          {/* Fila 2: Nombre Tutor / Jefe Inmediato */}
+          <View style={styles.infoRow}>
+            <View style={styles.labelCell}>
+              <Text style={styles.labelText}>NOMBRE COMPLETO TUTOR (JEFE INMEDIATO):</Text>
+            </View>
+            <View style={styles.valueCell}>
+              <Text style={styles.valueText}>{jefeInmediato.nombre}</Text>
+            </View>
+          </View>
+
+          {/* Fila 3: Organización + Fechas */}
+          <View style={styles.infoRow}>
+            <View style={styles.orgLabelCell}>
+              <Text style={styles.labelText}>ORGANIZACIÓN</Text>
+            </View>
+            <View style={styles.orgValueCell}>
+              <Text style={styles.valueText}>{empresa.nombre_empresa}</Text>
+            </View>
+            <View style={styles.datesContainer}>
+              <View style={[styles.dateSubRow, styles.dateSubRowBorder]}>
+                <View style={styles.dateLabelCell}>
+                  <Text style={styles.labelText}>FECHA DE SEGUIMIENTO DESDE MES N°</Text>
+                </View>
+                <View style={styles.dateValueCell}>
+                  <Text style={styles.valueText}>{perfil.fecha_inicio_practica ?? formatearPeriodo(periodo)}</Text>
+                </View>
+              </View>
+              <View style={styles.dateSubRow}>
+                <View style={styles.dateLabelCell}>
+                  <Text style={styles.labelText}>FECHA DE SEGUIMIENTO HASTA MES FINAL</Text>
+                </View>
+                <View style={styles.dateValueCell}>
+                  <Text style={styles.valueText}>{perfil.fecha_fin_practica ?? fechaGeneracion}</Text>
+                </View>
+              </View>
+            </View>
+          </View>
+
+          {/* SECCIÓN 1: AVANCE DE LA PROPUESTA DE MEJORA */}
+          <View style={styles.sectionHeaderBar}>
+            <Text style={styles.sectionHeaderText}>AVANCE DE LA PROPUESTA DE MEJORA</Text>
+          </View>
+
+          {/* Encabezado de la tabla 1 */}
+          <View style={styles.tableHeaderRow}>
+            <View style={styles.colActividadHeader}>
+              <Text style={styles.tableHeaderText}>
+                Avance de las actividades de la propuesta de mejora de la práctica profesional
+              </Text>
+            </View>
+            <View style={styles.colCumplimientoHeader}>
+              <Text style={styles.tableHeaderText}>% de cumplimiento</Text>
+            </View>
+            <View style={styles.colExplicacionHeader}>
+              <Text style={styles.tableHeaderText}>
+                Explique la evolución de cada fase de la propuesta de mejora
+              </Text>
+            </View>
+          </View>
+
+          {/* Filas de la tabla 1 */}
+          {propuestaMejora.map(({ actividad, porcentajeAvance, comentario }) => (
+            <View key={actividad.id} style={styles.tableDataRow}>
+              <View style={styles.colActividadData}>
+                <Text style={styles.tableDataText}>{actividad.nombre}</Text>
+              </View>
+              <View style={styles.colCumplimientoData}>
+                <Text style={styles.tableDataTextCenter}>{porcentajeAvance}%</Text>
+              </View>
+              <View style={styles.colExplicacionData}>
+                <Text style={styles.tableDataText}>
+                  {comentario ?? actividad.observacion_adicion ?? "En desarrollo."}
+                </Text>
+              </View>
+            </View>
+          ))}
+
+          {propuestaMejora.length === 0 && (
+            <View style={styles.tableDataRow}>
+              <View style={styles.colActividadData}>
+                <Text style={styles.tableDataText}>Actividades iniciales de propuesta de mejora</Text>
+              </View>
+              <View style={styles.colCumplimientoData}>
+                <Text style={styles.tableDataTextCenter}>0%</Text>
+              </View>
+              <View style={styles.colExplicacionData}>
+                <Text style={styles.tableDataText}>No se han agregado actividades adicionales de propuesta de mejora.</Text>
+              </View>
+            </View>
+          )}
+
+          {/* SECCIÓN 2: SEGUIMIENTO DEL PLAN DE TRABAJO */}
+          <View style={styles.sectionHeaderBar}>
+            <Text style={styles.sectionHeaderText}>
+              SEGUIMIENTO DEL PLAN DE TRABAJO (OBJETIVOS DEL PLAN DE TRABAJO)
+            </Text>
+            <Text style={styles.sectionSubText}>
+              (Por favor diligenciar la columna "seguimiento" de acuerdo al PLAN DE TRABAJO)
+            </Text>
+          </View>
+
+          {/* Encabezado de la tabla 2 */}
+          <View style={styles.tableHeaderRow}>
+            <View style={styles.colActividadHeader}>
+              <Text style={styles.tableHeaderText}>
+                Seguimiento a las actividades de práctica profesional
+              </Text>
+            </View>
+            <View style={styles.colCumplimientoHeader}>
+              <Text style={styles.tableHeaderText}>% de cumplimiento</Text>
+            </View>
+            <View style={styles.colExplicacionHeader}>
+              <Text style={styles.tableHeaderText}>Observaciones y/o comentarios</Text>
+            </View>
+          </View>
+
+          {/* Filas de la tabla 2 */}
+          {planDeTrabajo.map(({ actividad, porcentajeAvance, comentario }) => (
+            <View key={actividad.id} style={styles.tableDataRow}>
+              <View style={styles.colActividadData}>
+                <Text style={styles.tableDataText}>{actividad.nombre}</Text>
+              </View>
+              <View style={styles.colCumplimientoData}>
+                <Text style={styles.tableDataTextCenter}>{porcentajeAvance}%</Text>
+              </View>
+              <View style={styles.colExplicacionData}>
+                <Text style={styles.tableDataText}>{comentario ?? "Sin observaciones adicionales."}</Text>
+              </View>
+            </View>
+          ))}
+
+          {planDeTrabajo.length === 0 && (
+            <View style={styles.tableDataRow}>
+              <View style={styles.colActividadData}>
+                <Text style={styles.tableDataText}>Sin actividades del plan de trabajo registradas</Text>
+              </View>
+              <View style={styles.colCumplimientoData}>
+                <Text style={styles.tableDataTextCenter}>—</Text>
+              </View>
+              <View style={styles.colExplicacionData}>
+                <Text style={styles.tableDataText}>No hay actividades en el plan de trabajo.</Text>
+              </View>
+            </View>
+          )}
         </View>
 
-        <View style={styles.cuerpo}>
-          <View style={styles.seccion}>
-            <Text style={styles.seccionTitulo}>Datos del estudiante</Text>
-            <View style={styles.seccionLinea} />
-            <View style={styles.fila}>
-              <Campo etiqueta="NOMBRE COMPLETO" valor={perfil.nombre} />
-              <Campo etiqueta="DOCUMENTO" valor={perfil.documento ?? ""} />
-            </View>
-            <View style={styles.fila}>
-              <Campo etiqueta="PROGRAMA" valor={perfil.programa_academico ?? ""} />
-              <Campo etiqueta="SEMESTRE" valor={perfil.semestre ?? ""} />
-            </View>
-            <View style={styles.fila}>
-              <Campo etiqueta="CORREO" valor={perfil.correo} />
-              <Campo etiqueta="TELÉFONO" valor={perfil.telefono ?? ""} />
-            </View>
-            <View style={styles.fila}>
-              <Campo etiqueta="INICIO DE PRÁCTICA" valor={perfil.fecha_inicio_practica ?? ""} />
-              <Campo etiqueta="FIN DE PRÁCTICA" valor={perfil.fecha_fin_practica ?? ""} />
+        {/* Sección de Firmas al final */}
+        <View style={styles.firmasRow}>
+          <View style={styles.firmaBox}>
+            <View style={styles.firmaLine}>
+              <Text style={styles.firmaRoleText}>Firma Practicante</Text>
+              <Text style={styles.firmaNameText}>{perfil.nombre}</Text>
             </View>
           </View>
-
-          <View style={styles.seccion}>
-            <Text style={styles.seccionTitulo}>Datos de la empresa</Text>
-            <View style={styles.seccionLinea} />
-            <View style={styles.fila}>
-              <Campo etiqueta="EMPRESA" valor={empresa.nombre_empresa} />
-              <Campo etiqueta="NIT" valor={empresa.nit ?? ""} />
-            </View>
-            <View style={styles.fila}>
-              <Campo etiqueta="DIRECCIÓN" valor={empresa.direccion ?? ""} />
-              <Campo etiqueta="TELÉFONO" valor={empresa.telefono ?? ""} />
-            </View>
-            <View style={styles.fila}>
-              <Campo etiqueta="SECTOR" valor={empresa.sector ?? ""} />
-              <View style={styles.campo} />
+          <View style={styles.firmaBox}>
+            <View style={styles.firmaLine}>
+              <Text style={styles.firmaRoleText}>Firma Tutor (Jefe Inmediato)</Text>
+              <Text style={styles.firmaNameText}>{jefeInmediato.nombre}</Text>
             </View>
           </View>
-
-          <View style={styles.seccion}>
-            <Text style={styles.seccionTitulo}>Datos del jefe inmediato</Text>
-            <View style={styles.seccionLinea} />
-            <View style={styles.fila}>
-              <Campo etiqueta="NOMBRE" valor={jefeInmediato.nombre} />
-              <Campo etiqueta="CARGO" valor={jefeInmediato.cargo ?? ""} />
-            </View>
-            <View style={styles.fila}>
-              <Campo etiqueta="CORREO" valor={jefeInmediato.correo ?? ""} />
-              <Campo etiqueta="TELÉFONO" valor={jefeInmediato.telefono ?? ""} />
-            </View>
-          </View>
-
-          <View style={styles.seccion}>
-            <Text style={styles.seccionTitulo}>Actividades y avance a la fecha</Text>
-            <View style={styles.seccionLinea} />
-
-            {actividades.map(({ actividad, porcentajeAvance, comentario, esNuevaEsteMes }, i) => (
-              <View key={actividad.id} style={styles.actividad}>
-                <View style={styles.actividadFila}>
-                  <Text style={styles.actividadNombre}>{i + 1}. {actividad.nombre}</Text>
-                  <Text style={styles.actividadPorcentaje}>{porcentajeAvance}%</Text>
-                </View>
-                <View style={styles.barraFondo}>
-                  <View style={[styles.barraRelleno, { width: `${porcentajeAvance}%` }]} />
-                </View>
-                {esNuevaEsteMes && actividad.observacion_adicion && (
-                  <Text style={styles.comentario}>{actividad.observacion_adicion}</Text>
-                )}
-                {!esNuevaEsteMes && comentario && (
-                  <Text style={styles.comentario}>{comentario}</Text>
-                )}
-              </View>
-            ))}
-          </View>
-
-          <View style={styles.seccion}>
-            <Text style={styles.seccionTitulo}>Firmas</Text>
-            <View style={styles.seccionLinea} />
-            <View style={styles.firmasFila}>
-              <View style={styles.firmaColumna}>
-                <View style={styles.firmaEspacio} />
-                <View style={styles.firmaLinea} />
-                <Text style={styles.firmaRol}>Practicante</Text>
-                <Text style={styles.firmaNombre}>{perfil.nombre}</Text>
-              </View>
-              <View style={styles.firmaColumna}>
-                <View style={styles.firmaEspacio} />
-                <View style={styles.firmaLinea} />
-                <Text style={styles.firmaRol}>Jefe inmediato</Text>
-                <Text style={styles.firmaNombre}>{jefeInmediato.nombre}</Text>
-              </View>
-              <View style={styles.firmaColumna}>
-                <View style={styles.firmaEspacio} />
-                <View style={styles.firmaLinea} />
-                <Text style={styles.firmaRol}>Monitor de práctica (Universidad)</Text>
-                <Text style={styles.firmaNombre}> </Text>
-              </View>
+          <View style={styles.firmaBox}>
+            <View style={styles.firmaLine}>
+              <Text style={styles.firmaRoleText}>Firma Monitor Académico</Text>
+              <Text style={styles.firmaNameText}>Universidad El Bosque</Text>
             </View>
           </View>
         </View>

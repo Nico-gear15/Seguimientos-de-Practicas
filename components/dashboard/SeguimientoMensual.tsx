@@ -1,7 +1,7 @@
 "use client";
 
 import { useActionState, useState } from "react";
-import { FileDown, Save, CheckCircle2, Clock } from "lucide-react";
+import { FileDown, Save } from "lucide-react";
 import { guardarAvanceMensual } from "@/app/dashboard/actions";
 import type { Actividad } from "@/lib/types";
 
@@ -9,6 +9,7 @@ interface ActividadConAvance {
   actividad: Actividad;
   porcentajeActual: number;
   comentarioActual: string | null;
+  porcentajeMinimo?: number;
 }
 
 const estadoInicial = { error: null as string | null, seguimientoId: undefined as string | undefined };
@@ -78,9 +79,9 @@ export function SeguimientoMensual({
       <form action={formAction} className="space-y-4">
         <input type="hidden" name="periodo" value={periodo} />
 
-        {actividades.map(({ actividad, porcentajeActual, comentarioActual }, idx) => {
+        {actividades.map(({ actividad, porcentajeActual, comentarioActual, porcentajeMinimo = 0 }, idx) => {
           const valActual = valores[actividad.id] ?? porcentajeActual;
-          const refCode = `INT-${String(idx + 1).padStart(3, "0")}`;
+          const minPermitido = porcentajeMinimo;
 
           return (
             <div
@@ -118,16 +119,22 @@ export function SeguimientoMensual({
                 <input
                   type="range"
                   name={`avance_${actividad.id}`}
-                  min={0}
+                  min={minPermitido}
                   max={100}
                   step={5}
                   disabled={soloLectura}
-                  defaultValue={porcentajeActual}
-                  onChange={(e) =>
-                    setValores((prev) => ({ ...prev, [actividad.id]: Number(e.target.value) }))
-                  }
+                  value={valActual}
+                  onChange={(e) => {
+                    const nuevoVal = Math.max(minPermitido, Number(e.target.value));
+                    setValores((prev) => ({ ...prev, [actividad.id]: nuevoVal }));
+                  }}
                   className="w-full accent-brand-700 dark:accent-brand-500 cursor-pointer disabled:cursor-not-allowed disabled:opacity-50"
                 />
+                {minPermitido > 0 && (
+                  <p className="text-[10px] font-semibold text-slate-400">
+                    Mínimo acumulado en el mes anterior: {minPermitido}%
+                  </p>
+                )}
               </div>
 
               {/* Comment Input */}

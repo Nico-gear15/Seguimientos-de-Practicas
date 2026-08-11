@@ -82,6 +82,20 @@ export default async function ActividadesPage({
     .eq("usuario_id", user.id)
     .eq("estado", "generado");
 
+  const { data: seguimientosAnteriores } = await supabase
+    .from("seguimientos")
+    .select("id, periodo, avances_mensuales(actividad_id, porcentaje_avance)")
+    .eq("usuario_id", user.id)
+    .lt("periodo", periodo);
+
+  const avanceMinimoPorActividad = new Map<string, number>();
+  for (const s of seguimientosAnteriores ?? []) {
+    for (const av of (s as any).avances_mensuales ?? []) {
+      const prevMax = avanceMinimoPorActividad.get(av.actividad_id) ?? 0;
+      avanceMinimoPorActividad.set(av.actividad_id, Math.max(prevMax, Number(av.porcentaje_avance)));
+    }
+  }
+
   const avancesDelMes = new Map<string, { porcentaje: number; comentario: string | null }>(
     (seguimientoMes?.avances_mensuales ?? []).map((a: any) => [
       a.actividad_id,
@@ -91,9 +105,11 @@ export default async function ActividadesPage({
 
   const actividadesConAvance = (actividades ?? []).map((actividad) => {
     const avance = avancesDelMes.get(actividad.id);
+    const minPermitido = avanceMinimoPorActividad.get(actividad.id) ?? 0;
     return {
       actividad,
-      porcentajeActual: avance?.porcentaje ?? 0,
+      porcentajeMinimo: minPermitido,
+      porcentajeActual: avance?.porcentaje ?? minPermitido,
       comentarioActual: avance?.comentario ?? null,
     };
   });

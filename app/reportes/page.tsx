@@ -199,65 +199,132 @@ export default async function ReportesPage({
           </div>
 
           {/* Right Column: Live Document Preview Sheet (2 cols) */}
-          <div className="lg:col-span-2 bg-white text-slate-900 rounded-2xl border border-slate-200 shadow-xl p-8 space-y-6">
-            {/* Sheet Header */}
-            <div className="text-center border-b-2 border-brand-800 pb-5">
-              <h2 className="text-xl font-black text-brand-950 uppercase tracking-tight">
-                Reporte Mensual de Seguimiento
-              </h2>
-              <p className="text-xs font-bold text-brand-800 mt-1">
-                Prácticas Profesionales y Estancias Académicas — Periodo: {label}
-              </p>
+          <div className="lg:col-span-2 bg-white text-slate-900 rounded-2xl border-2 border-slate-800 shadow-2xl p-6 space-y-4">
+            {/* Main Header Title */}
+            <div className="bg-brand-900 text-white p-3 rounded-lg text-center font-black text-xs uppercase tracking-tight">
+              FORMATO SEGUIMIENTO DEL PLAN DE TRABAJO Y PROPUESTA DE MEJORA DE LA PRÁCTICA PROFESIONAL
             </div>
 
-            {/* General Info Table */}
-            <div className="overflow-hidden rounded-xl border border-slate-200">
-              <table className="w-full text-xs text-left">
-                <tbody>
-                  <tr className="border-b border-slate-200 bg-slate-50/80">
-                    <td className="p-3 font-bold text-slate-600 w-1/3">Estudiante:</td>
-                    <td className="p-3 font-semibold text-slate-900">{perfil?.nombre ?? "-"}</td>
-                  </tr>
-                  <tr className="border-b border-slate-200">
-                    <td className="p-3 font-bold text-slate-600">Matrícula / Doc:</td>
-                    <td className="p-3 font-semibold text-slate-900">{perfil?.documento ?? "-"}</td>
-                  </tr>
-                  <tr className="border-b border-slate-200 bg-slate-50/80">
-                    <td className="p-3 font-bold text-slate-600">Empresa / Institución:</td>
-                    <td className="p-3 font-semibold text-slate-900">{empresa?.nombre_empresa ?? "-"}</td>
-                  </tr>
+            {/* General Info Grid */}
+            <div className="border border-slate-800 text-xs">
+              <div className="flex border-b border-slate-800">
+                <div className="w-1/3 bg-slate-100 p-2 font-bold uppercase border-r border-slate-800">
+                  NOMBRE COMPLETO PRACTICANTE:
+                </div>
+                <div className="w-2/3 p-2 font-semibold">{perfil?.nombre ?? "-"}</div>
+              </div>
+
+              <div className="flex border-b border-slate-800">
+                <div className="w-1/3 bg-slate-100 p-2 font-bold uppercase border-r border-slate-800">
+                  NOMBRE COMPLETO TUTOR (JEFE INMEDIATO):
+                </div>
+                <div className="w-2/3 p-2 font-semibold">{jefe?.nombre ?? "-"}</div>
+              </div>
+
+              <div className="flex">
+                <div className="w-1/6 bg-slate-100 p-2 font-bold uppercase border-r border-slate-800 flex items-center">
+                  ORGANIZACIÓN
+                </div>
+                <div className="w-1/3 p-2 font-semibold border-r border-slate-800 flex items-center">
+                  {empresa?.nombre_empresa ?? "-"}
+                </div>
+                <div className="w-1/2 flex flex-col">
+                  <div className="flex border-b border-slate-800">
+                    <div className="w-3/5 bg-slate-100 p-1.5 font-bold text-[10px] border-r border-slate-800">
+                      FECHA DE SEGUIMIENTO DESDE MES N°
+                    </div>
+                    <div className="w-2/5 p-1.5 text-[10px] font-semibold">
+                      {perfil?.fecha_inicio_practica ?? label}
+                    </div>
+                  </div>
+                  <div className="flex">
+                    <div className="w-3/5 bg-slate-100 p-1.5 font-bold text-[10px] border-r border-slate-800">
+                      FECHA DE SEGUIMIENTO HASTA MES FINAL
+                    </div>
+                    <div className="w-2/5 p-1.5 text-[10px] font-semibold">
+                      {perfil?.fecha_fin_practica ?? label}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* SECCIÓN 1: AVANCE DE LA PROPUESTA DE MEJORA */}
+            <div className="border border-slate-800 text-xs">
+              <div className="bg-brand-100 text-brand-950 font-bold p-2 text-center text-xs uppercase border-b border-slate-800">
+                AVANCE DE LA PROPUESTA DE MEJORA
+              </div>
+              <table className="w-full text-left border-collapse">
+                <thead className="bg-slate-100 text-[10px] font-bold border-b border-slate-800">
                   <tr>
-                    <td className="p-3 font-bold text-slate-600">Jefe Directo:</td>
-                    <td className="p-3 font-semibold text-slate-900">{jefe?.nombre ?? "-"}</td>
+                    <th className="p-2 w-5/12 border-r border-slate-800">
+                      Avance de las actividades de la propuesta de mejora de la práctica profesional
+                    </th>
+                    <th className="p-2 w-2/12 text-center border-r border-slate-800">% de cumplimiento</th>
+                    <th className="p-2 w-5/12">Explique la evolución de cada fase de la propuesta de mejora</th>
                   </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-800 text-xs">
+                  {actividadesConAvance
+                    .filter((a) => !a.actividad.es_actividad_inicial)
+                    .map(({ actividad, porcentajeActual, comentarioActual }) => (
+                      <tr key={actividad.id}>
+                        <td className="p-2 font-medium border-r border-slate-800">{actividad.nombre}</td>
+                        <td className="p-2 text-center font-bold text-brand-900 border-r border-slate-800">
+                          {porcentajeActual}%
+                        </td>
+                        <td className="p-2 text-slate-600 italic">
+                          {comentarioActual ?? actividad.observacion_adicion ?? "En desarrollo."}
+                        </td>
+                      </tr>
+                    ))}
+                  {actividadesConAvance.filter((a) => !a.actividad.es_actividad_inicial).length === 0 && (
+                    <tr>
+                      <td colSpan={3} className="p-2 text-center text-slate-400 italic">
+                        No hay actividades registradas en la propuesta de mejora.
+                      </td>
+                    </tr>
+                  )}
                 </tbody>
               </table>
             </div>
 
-            {/* Activities Table */}
-            <div className="overflow-hidden rounded-xl border border-slate-200">
-              <table className="w-full text-xs text-left">
-                <thead className="bg-brand-50 text-brand-900 font-bold border-b border-slate-200">
+            {/* SECCIÓN 2: SEGUIMIENTO DEL PLAN DE TRABAJO */}
+            <div className="border border-slate-800 text-xs">
+              <div className="bg-brand-100 text-brand-950 font-bold p-2 text-center text-xs uppercase border-b border-slate-800">
+                SEGUIMIENTO DEL PLAN DE TRABAJO (OBJETIVOS DEL PLAN DE TRABAJO)
+                <p className="text-[10px] font-normal italic text-slate-600 normal-case">
+                  (Por favor diligenciar la columna "seguimiento" de acuerdo al PLAN DE TRABAJO)
+                </p>
+              </div>
+              <table className="w-full text-left border-collapse">
+                <thead className="bg-slate-100 text-[10px] font-bold border-b border-slate-800">
                   <tr>
-                    <th className="p-3 w-1/2">Actividad / Tarea</th>
-                    <th className="p-3 text-center w-1/6">% Avance</th>
-                    <th className="p-3 w-1/3">Observaciones</th>
+                    <th className="p-2 w-5/12 border-r border-slate-800">
+                      Seguimiento a las actividades de práctica profesional
+                    </th>
+                    <th className="p-2 w-2/12 text-center border-r border-slate-800">% de cumplimiento</th>
+                    <th className="p-2 w-5/12">Observaciones y/o comentarios</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-200">
-                  {actividadesConAvance.map(({ actividad, porcentajeActual, comentarioActual }) => (
-                    <tr key={actividad.id} className="hover:bg-slate-50/60">
-                      <td className="p-3 font-semibold text-slate-800">{actividad.nombre}</td>
-                      <td className="p-3 text-center font-bold text-brand-800">{porcentajeActual}%</td>
-                      <td className="p-3 text-slate-600 italic">
-                        {comentarioActual ?? actividad.observacion_adicion ?? "Sin observaciones registrados."}
-                      </td>
-                    </tr>
-                  ))}
-                  {actividadesConAvance.length === 0 && (
+                <tbody className="divide-y divide-slate-800 text-xs">
+                  {actividadesConAvance
+                    .filter((a) => a.actividad.es_actividad_inicial)
+                    .map(({ actividad, porcentajeActual, comentarioActual }) => (
+                      <tr key={actividad.id}>
+                        <td className="p-2 font-medium border-r border-slate-800">{actividad.nombre}</td>
+                        <td className="p-2 text-center font-bold text-brand-900 border-r border-slate-800">
+                          {porcentajeActual}%
+                        </td>
+                        <td className="p-2 text-slate-600 italic">
+                          {comentarioActual ?? "Sin observaciones adicionales."}
+                        </td>
+                      </tr>
+                    ))}
+                  {actividadesConAvance.filter((a) => a.actividad.es_actividad_inicial).length === 0 && (
                     <tr>
-                      <td colSpan={3} className="p-4 text-center text-slate-400 italic">
-                        No hay actividades registradas para este periodo.
+                      <td colSpan={3} className="p-2 text-center text-slate-400 italic">
+                        No hay actividades iniciales en el plan de trabajo.
                       </td>
                     </tr>
                   )}
@@ -266,24 +333,18 @@ export default async function ReportesPage({
             </div>
 
             {/* Signature Lines Preview */}
-            <div className="pt-10 grid grid-cols-3 gap-6 text-center text-[10px] text-slate-500">
-              <div className="space-y-1">
-                <div className="border-t border-slate-300 pt-2 font-bold text-slate-800">
-                  Firma Practicante
-                </div>
-                <p>{perfil?.nombre}</p>
+            <div className="pt-6 grid grid-cols-3 gap-4 text-center text-[10px]">
+              <div className="border border-slate-800 p-3 h-20 flex flex-col justify-end">
+                <div className="border-t border-slate-600 pt-1 font-bold">Firma Practicante</div>
+                <p className="text-slate-500 text-[9px]">{perfil?.nombre}</p>
               </div>
-              <div className="space-y-1">
-                <div className="border-t border-slate-300 pt-2 font-bold text-slate-800">
-                  Firma Jefe Directo
-                </div>
-                <p>{jefe?.nombre ?? "Jefe Inmediato"}</p>
+              <div className="border border-slate-800 p-3 h-20 flex flex-col justify-end">
+                <div className="border-t border-slate-600 pt-1 font-bold">Firma Tutor (Jefe Inmediato)</div>
+                <p className="text-slate-500 text-[9px]">{jefe?.nombre ?? "Jefe Inmediato"}</p>
               </div>
-              <div className="space-y-1">
-                <div className="border-t border-slate-300 pt-2 font-bold text-slate-800">
-                  Monitor Universidad
-                </div>
-                <p>Coordinador de Prácticas</p>
+              <div className="border border-slate-800 p-3 h-20 flex flex-col justify-end">
+                <div className="border-t border-slate-600 pt-1 font-bold">Firma Monitor Académico</div>
+                <p className="text-slate-500 text-[9px]">Universidad El Bosque</p>
               </div>
             </div>
           </div>

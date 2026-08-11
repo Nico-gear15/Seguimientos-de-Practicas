@@ -193,6 +193,40 @@ export async function guardarAvanceMensual(formData: FormData) {
     clave.startsWith("avance_")
   );
 
+  // Obtener todos los seguimientos de periodos anteriores para calcular el avance mínimo permitido por actividad
+  const { data: seguimientosAnteriores } = await supabase
+    .from("seguimientos")
+    .select("id, periodo, avances_mensuales(actividad_id, porcentaje_avance)")
+    .eq("usuario_id", user.id)
+    .lt("periodo", periodoSeleccionado);
+
+  const avanceMinimoPorActividad = new Map<string, number>();
+  for (const s of seguimientosAnteriores ?? []) {
+    for (const av of (s as any).avances_mensuales ?? []) {
+      const prevMax = avanceMinimoPorActividad.get(av.actividad_id) ?? 0;
+      avanceMinimoPorActividad.set(av.actividad_id, Math.max(prevMax, Number(av.porcentaje_avance)));
+    }
+  }
+
+  // Validar regla de negocio: el porcentaje no puede ser menor al del mes anterior
+  for (const [clave, valor] of entradas) {
+    const actividadId = clave.replace("avance_", "");
+    const porcentaje = Math.max(0, Math.min(100, Number(valor)));
+    const minPermitido = avanceMinimoPorActividad.get(actividadId) ?? 0;
+
+    if (porcentaje < minPermitido) {
+      const { data: act } = await supabase
+        .from("actividades")
+        .select("nombre")
+        .eq("id", actividadId)
+        .single();
+      const nombreAct = act?.nombre ?? "la actividad";
+      return {
+        error: `El avance de "${nombreAct}" (${porcentaje}%) no puede ser inferior al registrado en el mes anterior (${minPermitido}%).`,
+      };
+    }
+  }
+
   for (const [clave, valor] of entradas) {
     const actividadId = clave.replace("avance_", "");
     const porcentaje = Math.max(0, Math.min(100, Number(valor)));
