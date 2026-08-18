@@ -51,20 +51,20 @@ El sistema garantiza la integridad de la información mediante reglas de negocio
 - **Métricas de Avance Global:** Cálculo automático del porcentaje de cumplimiento de prácticas y estimación de horas completadas.
 - **Widgets de Resumen:** Indicadores de horas registradas, entregables completados y tarjetas de alertas condicionales.
 - **Acceso Rápido:** Accesos directos al informe mensual en curso y recordatorios de entregas.
-- 
+  
 ### 📋 2. Gestión Incremental de Actividades
 - **Sliders Interactivos:** Deslizadores para ajustar el porcentaje de avance por actividad.
 - **Regla de Avance Incremental:** Restricción en cliente y servidor que impide reducir el porcentaje alcanzado en periodos anteriores.
 - **Selector de Mes Reactivo:** Navegación entre meses con actualización automática instantánea.
 - **Registro de Actividades Adicionales:** Formulario con justificación obligatoria validada en base de datos.
-- 
-### 📄 3. Generación y Previsualización de Reportes PDF
+  
+### 📄 3. Generación y revisualización de Reportes PDF
 - **Formato Oficial Institucional:** Estructura reglamentaria organizada en tablas bordeadas con secciones independientes:
   - *Avance de la Propuesta de Mejora*
   - *Seguimiento al Plan de Trabajo (Objetivos)*
   - *Recuadros para Firmas del Practicante, Tutor/Jefe Inmediato y Monitor Académico*
 - **Vista Previa en Vivo (Live Preview):** Hoja interactiva tipo documento impreso que refleja los datos en tiempo real antes de descargar.
-- 
+
 ### 🛡️ 4. Panel de Coordinación y Administración
 - **Vista Matricial de Practicantes:** Monitoreo general de todos los estudiantes, programas académicos y empresas vinculadas.
 - **Indicadores de Riesgo:** Resalte automático de estudiantes con avance global inferior al 30%.
