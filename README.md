@@ -39,69 +39,40 @@ practica-seguimiento/
 ├── tsconfig.json
 └── .env.example
 ```
-
-## Pasos para levantar el proyecto
-
-1. **Crear el proyecto en Supabase** (gratis en supabase.com).
-   - En el editor SQL del dashboard, ejecutar el contenido de `lib/supabase/schema.sql`.
-   - En *Storage*, crear un bucket privado llamado `seguimientos-pdf` (o descomentar la línea sugerida al final del `schema.sql` y ejecutarla).
-   - Copiar la URL del proyecto y las llaves (`anon` y `service_role`) desde *Project Settings > API*.
-
-2. **Configurar variables de entorno**
-   ```bash
-   cp .env.example .env.local
-   # completar con tus llaves de Supabase y de Resend
-   ```
-
-3. **Instalar dependencias**
-   ```bash
-   npm install
-   ```
-
-4. **Correr en desarrollo**
-   ```bash
-   npm run dev
-   ```
-
-5. **Desplegar en Vercel**
-   - Conectar el repositorio de GitHub a Vercel (plan Hobby, gratis).
-   - Agregar las mismas variables de entorno en *Project Settings > Environment Variables*.
-   - El archivo `vercel.json` ya deja configurado el cron mensual (día 25 de cada mes) que dispara los recordatorios.
-
-## Panel de administración
-
-Se agregó un panel de solo lectura para que un coordinador/admin revise el avance de todos los estudiantes.
-
-- **`lib/supabase/migrations/002_admin.sql`** — agrega la columna `rol` a `perfiles` ('estudiante' | 'admin'), una función `is_admin()`, políticas RLS adicionales para que el admin pueda **leer** todas las tablas (los estudiantes siguen viendo solo lo suyo), una política de Storage para que el admin descargue cualquier PDF, y una vista `vista_avance_estudiantes` con el avance global del último periodo por estudiante.
-  - Ejecutar este archivo **después** de `schema.sql`.
-  - Para convertir a alguien en admin: `update perfiles set rol = 'admin' where correo = 'coordinador@tu-universidad.edu';`
-- **`app/admin/page.tsx`** — tabla con todos los estudiantes: empresa, último periodo, estado (al día / pendiente / sin seguimientos) y barra de avance global, con estudiantes por debajo del 30% resaltados.
-- **`app/admin/[estudianteId]/page.tsx`** — detalle de un estudiante: datos de empresa y jefe inmediato, tabla de avance mes a mes por actividad (incluye la observación de las actividades agregadas después del inicio), y lista de seguimientos entregados con descarga de PDF.
-- **`app/api/admin/estudiantes/[estudianteId]/pdf/[periodo]/route.ts`** — endpoint de descarga de PDF para el admin.
-- **`lib/admin.ts`** — helper `requireAdmin()` que protege cualquier página/endpoint exclusivo del panel.
-
-### Login del panel (usuario y contraseña fijos)
-
-Para simplificar el acceso, el panel de admin usa un **login independiente de Supabase Auth**, con usuario y contraseña definidos por variables de entorno:
-
-- `ADMIN_USERNAME` (por defecto `*********`)
-- `ADMIN_PASSWORD` (por defecto `****`)
-- `ADMIN_SESSION_SECRET`: string aleatorio usado para firmar la cookie de sesión (genera uno propio, no lo dejes vacío)
-
-Flujo: `app/admin/login` envía las credenciales a `POST /api/admin/login`; si coinciden, se crea una cookie httpOnly firmada válida por 8 horas. `lib/admin.ts` (`requireAdmin()`) verifica esa cookie en cada página/endpoint del panel y, si es válida, entrega un cliente de Supabase con **Service Role** (lee todos los datos sin depender de RLS, ya que el login ya no está atado a un usuario real de Supabase Auth).
-
-**Nota de seguridad:** un usuario y contraseña fijos —aunque estén en variables de entorno y no "quemados" en el código— son aceptables para un proyecto académico o una demo, pero no para producción real: cualquiera con la contraseña tiene acceso total y no hay manera de revocar el acceso a una sola persona ni de saber quién entró. Antes de un despliegue real, lo recomendable es volver a un login por usuario individual (por ejemplo, reutilizar Supabase Auth con el rol `admin` que ya quedó definido en `lib/supabase/migrations/002_admin.sql`, el cual sigue funcionando y puede reactivarse fácilmente).
-
-## Lo que falta por construir (siguiente paso natural)
-
-- Maquetar las páginas de `app/login`, `app/registro`, `app/dashboard` y `app/actividades` reutilizando el boceto de interfaz ya diseñado.
-- Formulario de "agregar actividad" en el frontend que exija la observación cuando la actividad no es inicial (la regla ya está validada en el backend en `app/api/actividades/route.ts`, pero falta la UI).
-- Formulario de "diligenciar seguimiento mensual" que guarde los `avances_mensuales` antes de llamar al endpoint de generación de PDF.
-- Pantalla de historial de seguimientos (lista de PDFs generados, con descarga desde Supabase Storage).
-
-## Notas de la regla de negocio de observación obligatoria
-
-Está implementada en dos capas, como recomienda el diseño técnico:
-
-1. **Base de datos** (`schema.sql`): un `check constraint` impide guardar una actividad con `es_actividad_inicial = false` si `observacion_adicion` está vacía.
-2. **API** (`app/api/actividades/route.ts`): valida lo mismo antes de tocar la base de datos, para devolver un mensaje de error claro al frontend.
+# 🎓 Portal de Prácticas — Academic Milestone Tracker
+Plataforma web integral diseñada para la gestión, seguimiento mensual y consolidación del avance de estudiantes en su proceso de Práctica Profesional y Estancias Académicas.
+---
+## 📌 Descripción del Proyecto
+El **Portal de Prácticas** proporciona a los estudiantes practicantes y a los coordinadores académicos un ecosistema centralizado e interactivo para registrar el cumplimiento de actividades, monitorear horas acumuladas y generar automáticamente el **Formato Oficial de Seguimiento del Plan de Trabajo y Propuesta de Mejora** en formato PDF institucional.
+El sistema garantiza la integridad de la información mediante reglas de negocio estrictas (como la validación de avance incremental no decreciente entre periodos y la justificación obligatoria para actividades adicionadas) ofreciendo además una interfaz moderna, responsiva y adaptable a modo claro y oscuro.
+---
+## ✨ Características Principales
+### 📊 1. Panel de Control (Dashboard)
+- **Métricas de Avance Global:** Cálculo automático del porcentaje de cumplimiento de prácticas y estimación de horas completadas.
+- **Widgets de Resumen:** Indicadores de horas registradas, entregables completados y tarjetas de alertas condicionales.
+- **Acceso Rápido:** Accesos directos al informe mensual en curso y recordatorios de entregas.
+### 📋 2. Gestión Incremental de Actividades
+- **Sliders Interactivos:** Deslizadores para ajustar el porcentaje de avance por actividad.
+- **Regla de Avance Incremental:** Restricción en cliente y servidor que impide reducir el porcentaje alcanzado en periodos anteriores.
+- **Selector de Mes Reactivo:** Navegación entre meses con actualización automática instantánea.
+- **Registro de Actividades Adicionales:** Formulario con justificación obligatoria validada en base de datos.
+### 📄 3. Generación y Previsualización de Reportes PDF
+- **Formato Oficial Institucional:** Estructura reglamentaria organizada en tablas bordeadas con secciones independientes:
+  - *Avance de la Propuesta de Mejora*
+  - *Seguimiento al Plan de Trabajo (Objetivos)*
+  - *Recuadros para Firmas del Practicante, Tutor/Jefe Inmediato y Monitor Académico*
+- **Vista Previa en Vivo (Live Preview):** Hoja interactiva tipo documento impreso que refleja los datos en tiempo real antes de descargar.
+### 🛡️ 4. Panel de Coordinación y Administración
+- **Vista Matricial de Practicantes:** Monitoreo general de todos los estudiantes, programas académicos y empresas vinculadas.
+- **Indicadores de Riesgo:** Resalte automático de estudiantes con avance global inferior al 30%.
+- **Descarga de Historial:** Acceso directo a la descarga de los reportes PDF generados en periodos anteriores.
+5. Diseño y Experiencia de Usuario
+- **Identidad Visual de Marca:** Paleta de colores índigo/púrpura institucional con acabados y bordes redondeados.
+- **Soporte de Tema Claro / Oscuro:** Alternancia de tema mediante botón en cabecera con persistencia y prevención de parpadeo.
+- **Navegación Fluida:** Menú lateral persistente, marca interactiva hacia el Dashboard, perfil directo y centro de notificaciones flotante.
+---
+Arquitectura y Tecnologías
+- **Framework:** Next.js (App Router), React, TypeScript
+- **Estilos & UI:** Tailwind CSS, Lucide Icons
+- **Base de Datos & Servicios:** Supabase (PostgreSQL, Row Level Security, Storage, Auth)
+- **Generación de Documentos:** `@react-pdf/renderer`
